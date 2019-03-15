@@ -1,0 +1,1079 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Buyut's Log</title><description>Thoughts, stories and ideas in open source programming</description><link>http://localhost:2373/</link><image><url>http://localhost:2373/favicon.png</url><title>Buyut's Log</title><link>http://localhost:2373/</link></image><generator>Ghost 2.18</generator><lastBuildDate>Thu, 14 Mar 2019 14:57:35 GMT</lastBuildDate><atom:link href="http://localhost:2373/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Menggunakan Glyphs/Ikon FontAwesome</title><description>FontAwesome dapat digunakan pada aplikasi TabrisJS dengan memanfaatkan fitur registerFont().</description><link>http://localhost:2373/menggunakan-glyphs-fontawesome/</link><guid isPermaLink="false">5c88f7500b247282fb697c0a</guid><category>Tabris JS</category><category>UI</category><category>iOS</category><category>Android</category><category>CollectionView</category><dc:creator>Joko Rivai</dc:creator><pubDate>Wed, 13 Mar 2019 14:27:37 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1506729623306-b5a934d88b53?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1506729623306-b5a934d88b53?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" alt="Menggunakan Glyphs/Ikon FontAwesome"&gt;&lt;p&gt;FontAwesome hanya contoh, Anda dapat juga menggunakan font lain seperti Ionicon dan Material Design Icons.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Konsep&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Untuk dapat melihat penggunaan ikon pada aplikasi yang dibangun dengan TabrisJS, kita perlu memikirkan cara paling mudah dalam penerapan font yang berisi icon ke dalam aplikasi. Untuk ini ide saya adalah menggunakan listview yang tiap itemnya menampilkan nama ikon dalam FontAwesome serta tampilan ikonnya.&lt;/p&gt;
+&lt;p&gt;Perlu diperhatikan bahwa aplikasi TabrisJS berbeda dengan aplikasi Web atau aplikasi hibrid yang menggunakan HTML yang di-compile dan ditampilkan dalam WebView pada aplikasi Cordova lainnya. Pada TabrisJS kita tidak dapat menggunakan HTML, karenanya kita memerlukan cara lain untuk menampilkan icon dalam FontAwesome pada aplikasi kita. Caranya, misalnya, dengan mengijinkan developer menampilkan teks yang di mix/dicampur dengan nama icon atau class icon kemudian utilitas yang kita siapkan akan memeriksa teks tersebut dan mengganti/mereplace nama-nama class dalam teks dengan icon sesuai kode karakternya.&lt;/p&gt;
+&lt;p&gt;Kita perlu menyiapkan sebuah file javascript sebagai utilitas untuk mem-parse teks dan menggantinya dengan icon pada file terpisah, sehingga dapat digunakan kembali pada proyek aplikasi mobile yang dibangun dengan TabrisJS di masa mendatang.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Membuat Projek&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Langkah pertama, silahkan buat sebuah proyek dengan mengikuti petunjuk &lt;a href="https://jokorivai.github.io/static/membuat-aplikasi-baru-pada-tabris-js/"&gt;di sini&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Kemudian dalam folder proyek buatlah sebuah folder dengan nama &lt;strong&gt;res&lt;/strong&gt;, Dan didalam folder &lt;strong&gt;res&lt;/strong&gt; ini buatlah sebuah folder lagi dengan nama &lt;strong&gt;font&lt;/strong&gt;. &lt;a href="https://drive.google.com/file/d/1b2jXahair3ofXGNUjaTWisA0uCvGeQIA/view?usp=sharing"&gt;Download&lt;/a&gt; &amp;amp; copy file FontAwesome (TTF) ke dalam folder &lt;strong&gt;res/font&lt;/strong&gt; ini, ganti namanya agar mudah dibaca. Perhatikan struktur folder berikut:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2373/content/images/2019/03/Screen-Shot-2019-03-13-at-22.54.03.png" alt="Menggunakan Glyphs/Ikon FontAwesome"&gt;&lt;/p&gt;
+&lt;p&gt;Kemudian di dalam folder &lt;strong&gt;src&lt;/strong&gt;, buat sebuah file dengan nama &lt;strong&gt;TabrisFontAwesome.js&lt;/strong&gt;. Buka file ini dan masukkan kode berikut:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;module.exports = new (function(){
+  this.font = 'FontAwesome';
+  tabris.app.registerFont('FontAwesome', './res/font/fontawesome-webfont.ttf#'+this.font);
+  this.fa = function(txt){
+    let _t = this;
+    if (txt == ''){
+      return '';
+    }
+    let ret = txt;
+    _t.glyphTable.forEach(glyph =&amp;gt; {
+      ret = ret.split('{'+glyph.n+'}').join(glyph.c);
+    });
+    return ret;
+  },
+  this.glyphTable = [
+    {n: &amp;quot;fa-glass&amp;quot;,	c: &amp;quot;\uf000&amp;quot;},
+    {n: &amp;quot;fa-music&amp;quot;,	c: &amp;quot;\uf001&amp;quot;},
+    {n: &amp;quot;fa-search&amp;quot;,	c: &amp;quot;\uf002&amp;quot;},
+    {n: &amp;quot;fa-envelope-o&amp;quot;,	c: &amp;quot;\uf003&amp;quot;},
+    {n: &amp;quot;fa-heart&amp;quot;,	c: &amp;quot;\uf004&amp;quot;},
+    {n: &amp;quot;fa-star&amp;quot;,	c: &amp;quot;\uf005&amp;quot;},
+    {n: &amp;quot;fa-star-o&amp;quot;,	c: &amp;quot;\uf006&amp;quot;},
+    {n: &amp;quot;fa-user&amp;quot;,	c: &amp;quot;\uf007&amp;quot;},
+    {n: &amp;quot;fa-film&amp;quot;,	c: &amp;quot;\uf008&amp;quot;},
+    {n: &amp;quot;fa-th-large&amp;quot;,	c: &amp;quot;\uf009&amp;quot;},
+    {n: &amp;quot;fa-th&amp;quot;,	c: &amp;quot;\uf00a&amp;quot;},
+    {n: &amp;quot;fa-th-list&amp;quot;,	c: &amp;quot;\uf00b&amp;quot;},
+    {n: &amp;quot;fa-check&amp;quot;,	c: &amp;quot;\uf00c&amp;quot;},
+    {n: &amp;quot;fa-times&amp;quot;,	c: &amp;quot;\uf00d&amp;quot;},
+    {n: &amp;quot;fa-search-plus&amp;quot;,	c: &amp;quot;\uf00e&amp;quot;},
+    {n: &amp;quot;fa-search-minus&amp;quot;,	c: &amp;quot;\uf010&amp;quot;},
+    {n: &amp;quot;fa-power-off&amp;quot;,	c: &amp;quot;\uf011&amp;quot;},
+    {n: &amp;quot;fa-signal&amp;quot;,	c: &amp;quot;\uf012&amp;quot;},
+    {n: &amp;quot;fa-cog&amp;quot;,	c: &amp;quot;\uf013&amp;quot;},
+    {n: &amp;quot;fa-trash-o&amp;quot;,	c: &amp;quot;\uf014&amp;quot;},
+    {n: &amp;quot;fa-home&amp;quot;,	c: &amp;quot;\uf015&amp;quot;},
+    {n: &amp;quot;fa-file-o&amp;quot;,	c: &amp;quot;\uf016&amp;quot;},
+    {n: &amp;quot;fa-clock-o&amp;quot;,	c: &amp;quot;\uf017&amp;quot;},
+    {n: &amp;quot;fa-road&amp;quot;,	c: &amp;quot;\uf018&amp;quot;},
+    {n: &amp;quot;fa-download&amp;quot;,	c: &amp;quot;\uf019&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-o-down&amp;quot;,	c: &amp;quot;\uf01a&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-o-up&amp;quot;,	c: &amp;quot;\uf01b&amp;quot;},
+    {n: &amp;quot;fa-inbox&amp;quot;,	c: &amp;quot;\uf01c&amp;quot;},
+    {n: &amp;quot;fa-play-circle-o&amp;quot;,	c: &amp;quot;\uf01d&amp;quot;},
+    {n: &amp;quot;fa-repeat&amp;quot;,	c: &amp;quot;\uf01e&amp;quot;},
+    {n: &amp;quot;fa-refresh&amp;quot;,	c: &amp;quot;\uf021&amp;quot;},
+    {n: &amp;quot;fa-list-alt&amp;quot;,	c: &amp;quot;\uf022&amp;quot;},
+    {n: &amp;quot;fa-lock&amp;quot;,	c: &amp;quot;\uf023&amp;quot;},
+    {n: &amp;quot;fa-flag&amp;quot;,	c: &amp;quot;\uf024&amp;quot;},
+    {n: &amp;quot;fa-headphones&amp;quot;,	c: &amp;quot;\uf025&amp;quot;},
+    {n: &amp;quot;fa-volume-off&amp;quot;,	c: &amp;quot;\uf026&amp;quot;},
+    {n: &amp;quot;fa-volume-down&amp;quot;,	c: &amp;quot;\uf027&amp;quot;},
+    {n: &amp;quot;fa-volume-up&amp;quot;,	c: &amp;quot;\uf028&amp;quot;},
+    {n: &amp;quot;fa-qrcode&amp;quot;,	c: &amp;quot;\uf029&amp;quot;},
+    {n: &amp;quot;fa-barcode&amp;quot;,	c: &amp;quot;\uf02a&amp;quot;},
+    {n: &amp;quot;fa-tag&amp;quot;,	c: &amp;quot;\uf02b&amp;quot;},
+    {n: &amp;quot;fa-tags&amp;quot;,	c: &amp;quot;\uf02c&amp;quot;},
+    {n: &amp;quot;fa-book&amp;quot;,	c: &amp;quot;\uf02d&amp;quot;},
+    {n: &amp;quot;fa-bookmark&amp;quot;,	c: &amp;quot;\uf02e&amp;quot;},
+    {n: &amp;quot;fa-print&amp;quot;,	c: &amp;quot;\uf02f&amp;quot;},
+    {n: &amp;quot;fa-camera&amp;quot;,	c: &amp;quot;\uf030&amp;quot;},
+    {n: &amp;quot;fa-font&amp;quot;,	c: &amp;quot;\uf031&amp;quot;},
+    {n: &amp;quot;fa-bold&amp;quot;,	c: &amp;quot;\uf032&amp;quot;},
+    {n: &amp;quot;fa-italic&amp;quot;,	c: &amp;quot;\uf033&amp;quot;},
+    {n: &amp;quot;fa-text-height&amp;quot;,	c: &amp;quot;\uf034&amp;quot;},
+    {n: &amp;quot;fa-text-width&amp;quot;,	c: &amp;quot;\uf035&amp;quot;},
+    {n: &amp;quot;fa-align-left&amp;quot;,	c: &amp;quot;\uf036&amp;quot;},
+    {n: &amp;quot;fa-align-center&amp;quot;,	c: &amp;quot;\uf037&amp;quot;},
+    {n: &amp;quot;fa-align-right&amp;quot;,	c: &amp;quot;\uf038&amp;quot;},
+    {n: &amp;quot;fa-align-justify&amp;quot;,	c: &amp;quot;\uf039&amp;quot;},
+    {n: &amp;quot;fa-list&amp;quot;,	c: &amp;quot;\uf03a&amp;quot;},
+    {n: &amp;quot;fa-outdent&amp;quot;,	c: &amp;quot;\uf03b&amp;quot;},
+    {n: &amp;quot;fa-indent&amp;quot;,	c: &amp;quot;\uf03c&amp;quot;},
+    {n: &amp;quot;fa-video-camera&amp;quot;,	c: &amp;quot;\uf03d&amp;quot;},
+    {n: &amp;quot;fa-picture-o&amp;quot;,	c: &amp;quot;\uf03e&amp;quot;},
+    {n: &amp;quot;fa-pencil&amp;quot;,	c: &amp;quot;\uf040&amp;quot;},
+    {n: &amp;quot;fa-map-marker&amp;quot;,	c: &amp;quot;\uf041&amp;quot;},
+    {n: &amp;quot;fa-adjust&amp;quot;,	c: &amp;quot;\uf042&amp;quot;},
+    {n: &amp;quot;fa-tint&amp;quot;,	c: &amp;quot;\uf043&amp;quot;},
+    {n: &amp;quot;fa-pencil-square-o&amp;quot;,	c: &amp;quot;\uf044&amp;quot;},
+    {n: &amp;quot;fa-share-square-o&amp;quot;,	c: &amp;quot;\uf045&amp;quot;},
+    {n: &amp;quot;fa-check-square-o&amp;quot;,	c: &amp;quot;\uf046&amp;quot;},
+    {n: &amp;quot;fa-arrows&amp;quot;,	c: &amp;quot;\uf047&amp;quot;},
+    {n: &amp;quot;fa-step-backward&amp;quot;,	c: &amp;quot;\uf048&amp;quot;},
+    {n: &amp;quot;fa-fast-backward&amp;quot;,	c: &amp;quot;\uf049&amp;quot;},
+    {n: &amp;quot;fa-backward&amp;quot;,	c: &amp;quot;\uf04a&amp;quot;},
+    {n: &amp;quot;fa-play&amp;quot;,	c: &amp;quot;\uf04b&amp;quot;},
+    {n: &amp;quot;fa-pause&amp;quot;,	c: &amp;quot;\uf04c&amp;quot;},
+    {n: &amp;quot;fa-stop&amp;quot;,	c: &amp;quot;\uf04d&amp;quot;},
+    {n: &amp;quot;fa-forward&amp;quot;,	c: &amp;quot;\uf04e&amp;quot;},
+    {n: &amp;quot;fa-fast-forward&amp;quot;,	c: &amp;quot;\uf050&amp;quot;},
+    {n: &amp;quot;fa-step-forward&amp;quot;,	c: &amp;quot;\uf051&amp;quot;},
+    {n: &amp;quot;fa-eject&amp;quot;,	c: &amp;quot;\uf052&amp;quot;},
+    {n: &amp;quot;fa-chevron-left&amp;quot;,	c: &amp;quot;\uf053&amp;quot;},
+    {n: &amp;quot;fa-chevron-right&amp;quot;,	c: &amp;quot;\uf054&amp;quot;},
+    {n: &amp;quot;fa-plus-circle&amp;quot;,	c: &amp;quot;\uf055&amp;quot;},
+    {n: &amp;quot;fa-minus-circle&amp;quot;,	c: &amp;quot;\uf056&amp;quot;},
+    {n: &amp;quot;fa-times-circle&amp;quot;,	c: &amp;quot;\uf057&amp;quot;},
+    {n: &amp;quot;fa-check-circle&amp;quot;,	c: &amp;quot;\uf058&amp;quot;},
+    {n: &amp;quot;fa-question-circle&amp;quot;,	c: &amp;quot;\uf059&amp;quot;},
+    {n: &amp;quot;fa-info-circle&amp;quot;,	c: &amp;quot;\uf05a&amp;quot;},
+    {n: &amp;quot;fa-crosshairs&amp;quot;,	c: &amp;quot;\uf05b&amp;quot;},
+    {n: &amp;quot;fa-times-circle-o&amp;quot;,	c: &amp;quot;\uf05c&amp;quot;},
+    {n: &amp;quot;fa-check-circle-o&amp;quot;,	c: &amp;quot;\uf05d&amp;quot;},
+    {n: &amp;quot;fa-ban&amp;quot;,	c: &amp;quot;\uf05e&amp;quot;},
+    {n: &amp;quot;fa-arrow-left&amp;quot;,	c: &amp;quot;\uf060&amp;quot;},
+    {n: &amp;quot;fa-arrow-right&amp;quot;,	c: &amp;quot;\uf061&amp;quot;},
+    {n: &amp;quot;fa-arrow-up&amp;quot;,	c: &amp;quot;\uf062&amp;quot;},
+    {n: &amp;quot;fa-arrow-down&amp;quot;,	c: &amp;quot;\uf063&amp;quot;},
+    {n: &amp;quot;fa-share&amp;quot;,	c: &amp;quot;\uf064&amp;quot;},
+    {n: &amp;quot;fa-expand&amp;quot;,	c: &amp;quot;\uf065&amp;quot;},
+    {n: &amp;quot;fa-compress&amp;quot;,	c: &amp;quot;\uf066&amp;quot;},
+    {n: &amp;quot;fa-plus&amp;quot;,	c: &amp;quot;\uf067&amp;quot;},
+    {n: &amp;quot;fa-minus&amp;quot;,	c: &amp;quot;\uf068&amp;quot;},
+    {n: &amp;quot;fa-asterisk&amp;quot;,	c: &amp;quot;\uf069&amp;quot;},
+    {n: &amp;quot;fa-exclamation-circle&amp;quot;,	c: &amp;quot;\uf06a&amp;quot;},
+    {n: &amp;quot;fa-gift&amp;quot;,	c: &amp;quot;\uf06b&amp;quot;},
+    {n: &amp;quot;fa-leaf&amp;quot;,	c: &amp;quot;\uf06c&amp;quot;},
+    {n: &amp;quot;fa-fire&amp;quot;,	c: &amp;quot;\uf06d&amp;quot;},
+    {n: &amp;quot;fa-eye&amp;quot;,	c: &amp;quot;\uf06e&amp;quot;},
+    {n: &amp;quot;fa-eye-slash&amp;quot;,	c: &amp;quot;\uf070&amp;quot;},
+    {n: &amp;quot;fa-exclamation-triangle&amp;quot;,	c: &amp;quot;\uf071&amp;quot;},
+    {n: &amp;quot;fa-plane&amp;quot;,	c: &amp;quot;\uf072&amp;quot;},
+    {n: &amp;quot;fa-calendar&amp;quot;,	c: &amp;quot;\uf073&amp;quot;},
+    {n: &amp;quot;fa-random&amp;quot;,	c: &amp;quot;\uf074&amp;quot;},
+    {n: &amp;quot;fa-comment&amp;quot;,	c: &amp;quot;\uf075&amp;quot;},
+    {n: &amp;quot;fa-magnet&amp;quot;,	c: &amp;quot;\uf076&amp;quot;},
+    {n: &amp;quot;fa-chevron-up&amp;quot;,	c: &amp;quot;\uf077&amp;quot;},
+    {n: &amp;quot;fa-chevron-down&amp;quot;,	c: &amp;quot;\uf078&amp;quot;},
+    {n: &amp;quot;fa-retweet&amp;quot;,	c: &amp;quot;\uf079&amp;quot;},
+    {n: &amp;quot;fa-shopping-cart&amp;quot;,	c: &amp;quot;\uf07a&amp;quot;},
+    {n: &amp;quot;fa-folder&amp;quot;,	c: &amp;quot;\uf07b&amp;quot;},
+    {n: &amp;quot;fa-folder-open&amp;quot;,	c: &amp;quot;\uf07c&amp;quot;},
+    {n: &amp;quot;fa-arrows-v&amp;quot;,	c: &amp;quot;\uf07d&amp;quot;},
+    {n: &amp;quot;fa-arrows-h&amp;quot;,	c: &amp;quot;\uf07e&amp;quot;},
+    {n: &amp;quot;fa-bar-chart&amp;quot;,	c: &amp;quot;\uf080&amp;quot;},
+    {n: &amp;quot;fa-twitter-square&amp;quot;,	c: &amp;quot;\uf081&amp;quot;},
+    {n: &amp;quot;fa-facebook-square&amp;quot;,	c: &amp;quot;\uf082&amp;quot;},
+    {n: &amp;quot;fa-camera-retro&amp;quot;,	c: &amp;quot;\uf083&amp;quot;},
+    {n: &amp;quot;fa-key&amp;quot;,	c: &amp;quot;\uf084&amp;quot;},
+    {n: &amp;quot;fa-cogs&amp;quot;,	c: &amp;quot;\uf085&amp;quot;},
+    {n: &amp;quot;fa-comments&amp;quot;,	c: &amp;quot;\uf086&amp;quot;},
+    {n: &amp;quot;fa-thumbs-o-up&amp;quot;,	c: &amp;quot;\uf087&amp;quot;},
+    {n: &amp;quot;fa-thumbs-o-down&amp;quot;,	c: &amp;quot;\uf088&amp;quot;},
+    {n: &amp;quot;fa-star-half&amp;quot;,	c: &amp;quot;\uf089&amp;quot;},
+    {n: &amp;quot;fa-heart-o&amp;quot;,	c: &amp;quot;\uf08a&amp;quot;},
+    {n: &amp;quot;fa-sign-out&amp;quot;,	c: &amp;quot;\uf08b&amp;quot;},
+    {n: &amp;quot;fa-linkedin-square&amp;quot;,	c: &amp;quot;\uf08c&amp;quot;},
+    {n: &amp;quot;fa-thumb-tack&amp;quot;,	c: &amp;quot;\uf08d&amp;quot;},
+    {n: &amp;quot;fa-external-link&amp;quot;,	c: &amp;quot;\uf08e&amp;quot;},
+    {n: &amp;quot;fa-sign-in&amp;quot;,	c: &amp;quot;\uf090&amp;quot;},
+    {n: &amp;quot;fa-trophy&amp;quot;,	c: &amp;quot;\uf091&amp;quot;},
+    {n: &amp;quot;fa-github-square&amp;quot;,	c: &amp;quot;\uf092&amp;quot;},
+    {n: &amp;quot;fa-upload&amp;quot;,	c: &amp;quot;\uf093&amp;quot;},
+    {n: &amp;quot;fa-lemon-o&amp;quot;,	c: &amp;quot;\uf094&amp;quot;},
+    {n: &amp;quot;fa-phone&amp;quot;,	c: &amp;quot;\uf095&amp;quot;},
+    {n: &amp;quot;fa-square-o&amp;quot;,	c: &amp;quot;\uf096&amp;quot;},
+    {n: &amp;quot;fa-bookmark-o&amp;quot;,	c: &amp;quot;\uf097&amp;quot;},
+    {n: &amp;quot;fa-phone-square&amp;quot;,	c: &amp;quot;\uf098&amp;quot;},
+    {n: &amp;quot;fa-twitter&amp;quot;,	c: &amp;quot;\uf099&amp;quot;},
+    {n: &amp;quot;fa-facebook&amp;quot;,	c: &amp;quot;\uf09a&amp;quot;},
+    {n: &amp;quot;fa-github&amp;quot;,	c: &amp;quot;\uf09b&amp;quot;},
+    {n: &amp;quot;fa-unlock&amp;quot;,	c: &amp;quot;\uf09c&amp;quot;},
+    {n: &amp;quot;fa-credit-card&amp;quot;,	c: &amp;quot;\uf09d&amp;quot;},
+    {n: &amp;quot;fa-rss&amp;quot;,	c: &amp;quot;\uf09e&amp;quot;},
+    {n: &amp;quot;fa-hdd-o&amp;quot;,	c: &amp;quot;\uf0a0&amp;quot;},
+    {n: &amp;quot;fa-bullhorn&amp;quot;,	c: &amp;quot;\uf0a1&amp;quot;},
+    {n: &amp;quot;fa-bell&amp;quot;,	c: &amp;quot;\uf0f3&amp;quot;},
+    {n: &amp;quot;fa-certificate&amp;quot;,	c: &amp;quot;\uf0a3&amp;quot;},
+    {n: &amp;quot;fa-hand-o-right&amp;quot;,	c: &amp;quot;\uf0a4&amp;quot;},
+    {n: &amp;quot;fa-hand-o-left&amp;quot;,	c: &amp;quot;\uf0a5&amp;quot;},
+    {n: &amp;quot;fa-hand-o-up&amp;quot;,	c: &amp;quot;\uf0a6&amp;quot;},
+    {n: &amp;quot;fa-hand-o-down&amp;quot;,	c: &amp;quot;\uf0a7&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-left&amp;quot;,	c: &amp;quot;\uf0a8&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-right&amp;quot;,	c: &amp;quot;\uf0a9&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-up&amp;quot;,	c: &amp;quot;\uf0aa&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-down&amp;quot;,	c: &amp;quot;\uf0ab&amp;quot;},
+    {n: &amp;quot;fa-globe&amp;quot;,	c: &amp;quot;\uf0ac&amp;quot;},
+    {n: &amp;quot;fa-wrench&amp;quot;,	c: &amp;quot;\uf0ad&amp;quot;},
+    {n: &amp;quot;fa-tasks&amp;quot;,	c: &amp;quot;\uf0ae&amp;quot;},
+    {n: &amp;quot;fa-filter&amp;quot;,	c: &amp;quot;\uf0b0&amp;quot;},
+    {n: &amp;quot;fa-briefcase&amp;quot;,	c: &amp;quot;\uf0b1&amp;quot;},
+    {n: &amp;quot;fa-arrows-alt&amp;quot;,	c: &amp;quot;\uf0b2&amp;quot;},
+    {n: &amp;quot;fa-users&amp;quot;,	c: &amp;quot;\uf0c0&amp;quot;},
+    {n: &amp;quot;fa-link&amp;quot;,	c: &amp;quot;\uf0c1&amp;quot;},
+    {n: &amp;quot;fa-cloud&amp;quot;,	c: &amp;quot;\uf0c2&amp;quot;},
+    {n: &amp;quot;fa-flask&amp;quot;,	c: &amp;quot;\uf0c3&amp;quot;},
+    {n: &amp;quot;fa-scissors&amp;quot;,	c: &amp;quot;\uf0c4&amp;quot;},
+    {n: &amp;quot;fa-files-o&amp;quot;,	c: &amp;quot;\uf0c5&amp;quot;},
+    {n: &amp;quot;fa-paperclip&amp;quot;,	c: &amp;quot;\uf0c6&amp;quot;},
+    {n: &amp;quot;fa-floppy-o&amp;quot;,	c: &amp;quot;\uf0c7&amp;quot;},
+    {n: &amp;quot;fa-square&amp;quot;,	c: &amp;quot;\uf0c8&amp;quot;},
+    {n: &amp;quot;fa-bars&amp;quot;,	c: &amp;quot;\uf0c9&amp;quot;},
+    {n: &amp;quot;fa-list-ul&amp;quot;,	c: &amp;quot;\uf0ca&amp;quot;},
+    {n: &amp;quot;fa-list-ol&amp;quot;,	c: &amp;quot;\uf0cb&amp;quot;},
+    {n: &amp;quot;fa-strikethrough&amp;quot;,	c: &amp;quot;\uf0cc&amp;quot;},
+    {n: &amp;quot;fa-underline&amp;quot;,	c: &amp;quot;\uf0cd&amp;quot;},
+    {n: &amp;quot;fa-table&amp;quot;,	c: &amp;quot;\uf0ce&amp;quot;},
+    {n: &amp;quot;fa-magic&amp;quot;,	c: &amp;quot;\uf0d0&amp;quot;},
+    {n: &amp;quot;fa-truck&amp;quot;,	c: &amp;quot;\uf0d1&amp;quot;},
+    {n: &amp;quot;fa-pinterest&amp;quot;,	c: &amp;quot;\uf0d2&amp;quot;},
+    {n: &amp;quot;fa-pinterest-square&amp;quot;,	c: &amp;quot;\uf0d3&amp;quot;},
+    {n: &amp;quot;fa-google-plus-square&amp;quot;,	c: &amp;quot;\uf0d4&amp;quot;},
+    {n: &amp;quot;fa-google-plus&amp;quot;,	c: &amp;quot;\uf0d5&amp;quot;},
+    {n: &amp;quot;fa-money&amp;quot;,	c: &amp;quot;\uf0d6&amp;quot;},
+    {n: &amp;quot;fa-caret-down&amp;quot;,	c: &amp;quot;\uf0d7&amp;quot;},
+    {n: &amp;quot;fa-caret-up&amp;quot;,	c: &amp;quot;\uf0d8&amp;quot;},
+    {n: &amp;quot;fa-caret-left&amp;quot;,	c: &amp;quot;\uf0d9&amp;quot;},
+    {n: &amp;quot;fa-caret-right&amp;quot;,	c: &amp;quot;\uf0da&amp;quot;},
+    {n: &amp;quot;fa-columns&amp;quot;,	c: &amp;quot;\uf0db&amp;quot;},
+    {n: &amp;quot;fa-sort&amp;quot;,	c: &amp;quot;\uf0dc&amp;quot;},
+    {n: &amp;quot;fa-sort-desc&amp;quot;,	c: &amp;quot;\uf0dd&amp;quot;},
+    {n: &amp;quot;fa-sort-asc&amp;quot;,	c: &amp;quot;\uf0de&amp;quot;},
+    {n: &amp;quot;fa-envelope&amp;quot;,	c: &amp;quot;\uf0e0&amp;quot;},
+    {n: &amp;quot;fa-linkedin&amp;quot;,	c: &amp;quot;\uf0e1&amp;quot;},
+    {n: &amp;quot;fa-undo&amp;quot;,	c: &amp;quot;\uf0e2&amp;quot;},
+    {n: &amp;quot;fa-gavel&amp;quot;,	c: &amp;quot;\uf0e3&amp;quot;},
+    {n: &amp;quot;fa-tachometer&amp;quot;,	c: &amp;quot;\uf0e4&amp;quot;},
+    {n: &amp;quot;fa-comment-o&amp;quot;,	c: &amp;quot;\uf0e5&amp;quot;},
+    {n: &amp;quot;fa-comments-o&amp;quot;,	c: &amp;quot;\uf0e6&amp;quot;},
+    {n: &amp;quot;fa-bolt&amp;quot;,	c: &amp;quot;\uf0e7&amp;quot;},
+    {n: &amp;quot;fa-sitemap&amp;quot;,	c: &amp;quot;\uf0e8&amp;quot;},
+    {n: &amp;quot;fa-umbrella&amp;quot;,	c: &amp;quot;\uf0e9&amp;quot;},
+    {n: &amp;quot;fa-clipboard&amp;quot;,	c: &amp;quot;\uf0ea&amp;quot;},
+    {n: &amp;quot;fa-lightbulb-o&amp;quot;,	c: &amp;quot;\uf0eb&amp;quot;},
+    {n: &amp;quot;fa-exchange&amp;quot;,	c: &amp;quot;\uf0ec&amp;quot;},
+    {n: &amp;quot;fa-cloud-download&amp;quot;,	c: &amp;quot;\uf0ed&amp;quot;},
+    {n: &amp;quot;fa-cloud-upload&amp;quot;,	c: &amp;quot;\uf0ee&amp;quot;},
+    {n: &amp;quot;fa-user-md&amp;quot;,	c: &amp;quot;\uf0f0&amp;quot;},
+    {n: &amp;quot;fa-stethoscope&amp;quot;,	c: &amp;quot;\uf0f1&amp;quot;},
+    {n: &amp;quot;fa-suitcase&amp;quot;,	c: &amp;quot;\uf0f2&amp;quot;},
+    {n: &amp;quot;fa-bell-o&amp;quot;,	c: &amp;quot;\uf0a2&amp;quot;},
+    {n: &amp;quot;fa-coffee&amp;quot;,	c: &amp;quot;\uf0f4&amp;quot;},
+    {n: &amp;quot;fa-cutlery&amp;quot;,	c: &amp;quot;\uf0f5&amp;quot;},
+    {n: &amp;quot;fa-file-text-o&amp;quot;,	c: &amp;quot;\uf0f6&amp;quot;},
+    {n: &amp;quot;fa-building-o&amp;quot;,	c: &amp;quot;\uf0f7&amp;quot;},
+    {n: &amp;quot;fa-hospital-o&amp;quot;,	c: &amp;quot;\uf0f8&amp;quot;},
+    {n: &amp;quot;fa-ambulance&amp;quot;,	c: &amp;quot;\uf0f9&amp;quot;},
+    {n: &amp;quot;fa-medkit&amp;quot;,	c: &amp;quot;\uf0fa&amp;quot;},
+    {n: &amp;quot;fa-fighter-jet&amp;quot;,	c: &amp;quot;\uf0fb&amp;quot;},
+    {n: &amp;quot;fa-beer&amp;quot;,	c: &amp;quot;\uf0fc&amp;quot;},
+    {n: &amp;quot;fa-h-square&amp;quot;,	c: &amp;quot;\uf0fd&amp;quot;},
+    {n: &amp;quot;fa-plus-square&amp;quot;,	c: &amp;quot;\uf0fe&amp;quot;},
+    {n: &amp;quot;fa-angle-double-left&amp;quot;,	c: &amp;quot;\uf100&amp;quot;},
+    {n: &amp;quot;fa-angle-double-right&amp;quot;,	c: &amp;quot;\uf101&amp;quot;},
+    {n: &amp;quot;fa-angle-double-up&amp;quot;,	c: &amp;quot;\uf102&amp;quot;},
+    {n: &amp;quot;fa-angle-double-down&amp;quot;,	c: &amp;quot;\uf103&amp;quot;},
+    {n: &amp;quot;fa-angle-left&amp;quot;,	c: &amp;quot;\uf104&amp;quot;},
+    {n: &amp;quot;fa-angle-right&amp;quot;,	c: &amp;quot;\uf105&amp;quot;},
+    {n: &amp;quot;fa-angle-up&amp;quot;,	c: &amp;quot;\uf106&amp;quot;},
+    {n: &amp;quot;fa-angle-down&amp;quot;,	c: &amp;quot;\uf107&amp;quot;},
+    {n: &amp;quot;fa-desktop&amp;quot;,	c: &amp;quot;\uf108&amp;quot;},
+    {n: &amp;quot;fa-laptop&amp;quot;,	c: &amp;quot;\uf109&amp;quot;},
+    {n: &amp;quot;fa-tablet&amp;quot;,	c: &amp;quot;\uf10a&amp;quot;},
+    {n: &amp;quot;fa-mobile&amp;quot;,	c: &amp;quot;\uf10b&amp;quot;},
+    {n: &amp;quot;fa-circle-o&amp;quot;,	c: &amp;quot;\uf10c&amp;quot;},
+    {n: &amp;quot;fa-quote-left&amp;quot;,	c: &amp;quot;\uf10d&amp;quot;},
+    {n: &amp;quot;fa-quote-right&amp;quot;,	c: &amp;quot;\uf10e&amp;quot;},
+    {n: &amp;quot;fa-spinner&amp;quot;,	c: &amp;quot;\uf110&amp;quot;},
+    {n: &amp;quot;fa-circle&amp;quot;,	c: &amp;quot;\uf111&amp;quot;},
+    {n: &amp;quot;fa-reply&amp;quot;,	c: &amp;quot;\uf112&amp;quot;},
+    {n: &amp;quot;fa-github-alt&amp;quot;,	c: &amp;quot;\uf113&amp;quot;},
+    {n: &amp;quot;fa-folder-o&amp;quot;,	c: &amp;quot;\uf114&amp;quot;},
+    {n: &amp;quot;fa-folder-open-o&amp;quot;,	c: &amp;quot;\uf115&amp;quot;},
+    {n: &amp;quot;fa-smile-o&amp;quot;,	c: &amp;quot;\uf118&amp;quot;},
+    {n: &amp;quot;fa-frown-o&amp;quot;,	c: &amp;quot;\uf119&amp;quot;},
+    {n: &amp;quot;fa-meh-o&amp;quot;,	c: &amp;quot;\uf11a&amp;quot;},
+    {n: &amp;quot;fa-gamepad&amp;quot;,	c: &amp;quot;\uf11b&amp;quot;},
+    {n: &amp;quot;fa-keyboard-o&amp;quot;,	c: &amp;quot;\uf11c&amp;quot;},
+    {n: &amp;quot;fa-flag-o&amp;quot;,	c: &amp;quot;\uf11d&amp;quot;},
+    {n: &amp;quot;fa-flag-checkered&amp;quot;,	c: &amp;quot;\uf11e&amp;quot;},
+    {n: &amp;quot;fa-terminal&amp;quot;,	c: &amp;quot;\uf120&amp;quot;},
+    {n: &amp;quot;fa-code&amp;quot;,	c: &amp;quot;\uf121&amp;quot;},
+    {n: &amp;quot;fa-reply-all&amp;quot;,	c: &amp;quot;\uf122&amp;quot;},
+    {n: &amp;quot;fa-star-half-o&amp;quot;,	c: &amp;quot;\uf123&amp;quot;},
+    {n: &amp;quot;fa-location-arrow&amp;quot;,	c: &amp;quot;\uf124&amp;quot;},
+    {n: &amp;quot;fa-crop&amp;quot;,	c: &amp;quot;\uf125&amp;quot;},
+    {n: &amp;quot;fa-code-fork&amp;quot;,	c: &amp;quot;\uf126&amp;quot;},
+    {n: &amp;quot;fa-chain-broken&amp;quot;,	c: &amp;quot;\uf127&amp;quot;},
+    {n: &amp;quot;fa-question&amp;quot;,	c: &amp;quot;\uf128&amp;quot;},
+    {n: &amp;quot;fa-info&amp;quot;,	c: &amp;quot;\uf129&amp;quot;},
+    {n: &amp;quot;fa-exclamation&amp;quot;,	c: &amp;quot;\uf12a&amp;quot;},
+    {n: &amp;quot;fa-superscript&amp;quot;,	c: &amp;quot;\uf12b&amp;quot;},
+    {n: &amp;quot;fa-subscript&amp;quot;,	c: &amp;quot;\uf12c&amp;quot;},
+    {n: &amp;quot;fa-eraser&amp;quot;,	c: &amp;quot;\uf12d&amp;quot;},
+    {n: &amp;quot;fa-puzzle-piece&amp;quot;,	c: &amp;quot;\uf12e&amp;quot;},
+    {n: &amp;quot;fa-microphone&amp;quot;,	c: &amp;quot;\uf130&amp;quot;},
+    {n: &amp;quot;fa-microphone-slash&amp;quot;,	c: &amp;quot;\uf131&amp;quot;},
+    {n: &amp;quot;fa-shield&amp;quot;,	c: &amp;quot;\uf132&amp;quot;},
+    {n: &amp;quot;fa-calendar-o&amp;quot;,	c: &amp;quot;\uf133&amp;quot;},
+    {n: &amp;quot;fa-fire-extinguisher&amp;quot;,	c: &amp;quot;\uf134&amp;quot;},
+    {n: &amp;quot;fa-rocket&amp;quot;,	c: &amp;quot;\uf135&amp;quot;},
+    {n: &amp;quot;fa-maxcdn&amp;quot;,	c: &amp;quot;\uf136&amp;quot;},
+    {n: &amp;quot;fa-chevron-circle-left&amp;quot;,	c: &amp;quot;\uf137&amp;quot;},
+    {n: &amp;quot;fa-chevron-circle-right&amp;quot;,	c: &amp;quot;\uf138&amp;quot;},
+    {n: &amp;quot;fa-chevron-circle-up&amp;quot;,	c: &amp;quot;\uf139&amp;quot;},
+    {n: &amp;quot;fa-chevron-circle-down&amp;quot;,	c: &amp;quot;\uf13a&amp;quot;},
+    {n: &amp;quot;fa-html5&amp;quot;,	c: &amp;quot;\uf13b&amp;quot;},
+    {n: &amp;quot;fa-css3&amp;quot;,	c: &amp;quot;\uf13c&amp;quot;},
+    {n: &amp;quot;fa-anchor&amp;quot;,	c: &amp;quot;\uf13d&amp;quot;},
+    {n: &amp;quot;fa-unlock-alt&amp;quot;,	c: &amp;quot;\uf13e&amp;quot;},
+    {n: &amp;quot;fa-bullseye&amp;quot;,	c: &amp;quot;\uf140&amp;quot;},
+    {n: &amp;quot;fa-ellipsis-h&amp;quot;,	c: &amp;quot;\uf141&amp;quot;},
+    {n: &amp;quot;fa-ellipsis-v&amp;quot;,	c: &amp;quot;\uf142&amp;quot;},
+    {n: &amp;quot;fa-rss-square&amp;quot;,	c: &amp;quot;\uf143&amp;quot;},
+    {n: &amp;quot;fa-play-circle&amp;quot;,	c: &amp;quot;\uf144&amp;quot;},
+    {n: &amp;quot;fa-ticket&amp;quot;,	c: &amp;quot;\uf145&amp;quot;},
+    {n: &amp;quot;fa-minus-square&amp;quot;,	c: &amp;quot;\uf146&amp;quot;},
+    {n: &amp;quot;fa-minus-square-o&amp;quot;,	c: &amp;quot;\uf147&amp;quot;},
+    {n: &amp;quot;fa-level-up&amp;quot;,	c: &amp;quot;\uf148&amp;quot;},
+    {n: &amp;quot;fa-level-down&amp;quot;,	c: &amp;quot;\uf149&amp;quot;},
+    {n: &amp;quot;fa-check-square&amp;quot;,	c: &amp;quot;\uf14a&amp;quot;},
+    {n: &amp;quot;fa-pencil-square&amp;quot;,	c: &amp;quot;\uf14b&amp;quot;},
+    {n: &amp;quot;fa-external-link-square&amp;quot;,	c: &amp;quot;\uf14c&amp;quot;},
+    {n: &amp;quot;fa-share-square&amp;quot;,	c: &amp;quot;\uf14d&amp;quot;},
+    {n: &amp;quot;fa-compass&amp;quot;,	c: &amp;quot;\uf14e&amp;quot;},
+    {n: &amp;quot;fa-caret-square-o-down&amp;quot;,	c: &amp;quot;\uf150&amp;quot;},
+    {n: &amp;quot;fa-caret-square-o-up&amp;quot;,	c: &amp;quot;\uf151&amp;quot;},
+    {n: &amp;quot;fa-caret-square-o-right&amp;quot;,	c: &amp;quot;\uf152&amp;quot;},
+    {n: &amp;quot;fa-eur&amp;quot;,	c: &amp;quot;\uf153&amp;quot;},
+    {n: &amp;quot;fa-gbp&amp;quot;,	c: &amp;quot;\uf154&amp;quot;},
+    {n: &amp;quot;fa-usd&amp;quot;,	c: &amp;quot;\uf155&amp;quot;},
+    {n: &amp;quot;fa-inr&amp;quot;,	c: &amp;quot;\uf156&amp;quot;},
+    {n: &amp;quot;fa-jpy&amp;quot;,	c: &amp;quot;\uf157&amp;quot;},
+    {n: &amp;quot;fa-rub&amp;quot;,	c: &amp;quot;\uf158&amp;quot;},
+    {n: &amp;quot;fa-krw&amp;quot;,	c: &amp;quot;\uf159&amp;quot;},
+    {n: &amp;quot;fa-btc&amp;quot;,	c: &amp;quot;\uf15a&amp;quot;},
+    {n: &amp;quot;fa-file&amp;quot;,	c: &amp;quot;\uf15b&amp;quot;},
+    {n: &amp;quot;fa-file-text&amp;quot;,	c: &amp;quot;\uf15c&amp;quot;},
+    {n: &amp;quot;fa-sort-alpha-asc&amp;quot;,	c: &amp;quot;\uf15d&amp;quot;},
+    {n: &amp;quot;fa-sort-alpha-desc&amp;quot;,	c: &amp;quot;\uf15e&amp;quot;},
+    {n: &amp;quot;fa-sort-amount-asc&amp;quot;,	c: &amp;quot;\uf160&amp;quot;},
+    {n: &amp;quot;fa-sort-amount-desc&amp;quot;,	c: &amp;quot;\uf161&amp;quot;},
+    {n: &amp;quot;fa-sort-numeric-asc&amp;quot;,	c: &amp;quot;\uf162&amp;quot;},
+    {n: &amp;quot;fa-sort-numeric-desc&amp;quot;,	c: &amp;quot;\uf163&amp;quot;},
+    {n: &amp;quot;fa-thumbs-up&amp;quot;,	c: &amp;quot;\uf164&amp;quot;},
+    {n: &amp;quot;fa-thumbs-down&amp;quot;,	c: &amp;quot;\uf165&amp;quot;},
+    {n: &amp;quot;fa-youtube-square&amp;quot;,	c: &amp;quot;\uf166&amp;quot;},
+    {n: &amp;quot;fa-youtube&amp;quot;,	c: &amp;quot;\uf167&amp;quot;},
+    {n: &amp;quot;fa-xing&amp;quot;,	c: &amp;quot;\uf168&amp;quot;},
+    {n: &amp;quot;fa-xing-square&amp;quot;,	c: &amp;quot;\uf169&amp;quot;},
+    {n: &amp;quot;fa-youtube-play&amp;quot;,	c: &amp;quot;\uf16a&amp;quot;},
+    {n: &amp;quot;fa-dropbox&amp;quot;,	c: &amp;quot;\uf16b&amp;quot;},
+    {n: &amp;quot;fa-stack-overflow&amp;quot;,	c: &amp;quot;\uf16c&amp;quot;},
+    {n: &amp;quot;fa-instagram&amp;quot;,	c: &amp;quot;\uf16d&amp;quot;},
+    {n: &amp;quot;fa-flickr&amp;quot;,	c: &amp;quot;\uf16e&amp;quot;},
+    {n: &amp;quot;fa-adn&amp;quot;,	c: &amp;quot;\uf170&amp;quot;},
+    {n: &amp;quot;fa-bitbucket&amp;quot;,	c: &amp;quot;\uf171&amp;quot;},
+    {n: &amp;quot;fa-bitbucket-square&amp;quot;,	c: &amp;quot;\uf172&amp;quot;},
+    {n: &amp;quot;fa-tumblr&amp;quot;,	c: &amp;quot;\uf173&amp;quot;},
+    {n: &amp;quot;fa-tumblr-square&amp;quot;,	c: &amp;quot;\uf174&amp;quot;},
+    {n: &amp;quot;fa-long-arrow-down&amp;quot;,	c: &amp;quot;\uf175&amp;quot;},
+    {n: &amp;quot;fa-long-arrow-up&amp;quot;,	c: &amp;quot;\uf176&amp;quot;},
+    {n: &amp;quot;fa-long-arrow-left&amp;quot;,	c: &amp;quot;\uf177&amp;quot;},
+    {n: &amp;quot;fa-long-arrow-right&amp;quot;,	c: &amp;quot;\uf178&amp;quot;},
+    {n: &amp;quot;fa-apple&amp;quot;,	c: &amp;quot;\uf179&amp;quot;},
+    {n: &amp;quot;fa-windows&amp;quot;,	c: &amp;quot;\uf17a&amp;quot;},
+    {n: &amp;quot;fa-android&amp;quot;,	c: &amp;quot;\uf17b&amp;quot;},
+    {n: &amp;quot;fa-linux&amp;quot;,	c: &amp;quot;\uf17c&amp;quot;},
+    {n: &amp;quot;fa-dribbble&amp;quot;,	c: &amp;quot;\uf17d&amp;quot;},
+    {n: &amp;quot;fa-skype&amp;quot;,	c: &amp;quot;\uf17e&amp;quot;},
+    {n: &amp;quot;fa-foursquare&amp;quot;,	c: &amp;quot;\uf180&amp;quot;},
+    {n: &amp;quot;fa-trello&amp;quot;,	c: &amp;quot;\uf181&amp;quot;},
+    {n: &amp;quot;fa-female&amp;quot;,	c: &amp;quot;\uf182&amp;quot;},
+    {n: &amp;quot;fa-male&amp;quot;,	c: &amp;quot;\uf183&amp;quot;},
+    {n: &amp;quot;fa-gratipay&amp;quot;,	c: &amp;quot;\uf184&amp;quot;},
+    {n: &amp;quot;fa-sun-o&amp;quot;,	c: &amp;quot;\uf185&amp;quot;},
+    {n: &amp;quot;fa-moon-o&amp;quot;,	c: &amp;quot;\uf186&amp;quot;},
+    {n: &amp;quot;fa-archive&amp;quot;,	c: &amp;quot;\uf187&amp;quot;},
+    {n: &amp;quot;fa-bug&amp;quot;,	c: &amp;quot;\uf188&amp;quot;},
+    {n: &amp;quot;fa-vk&amp;quot;,	c: &amp;quot;\uf189&amp;quot;},
+    {n: &amp;quot;fa-weibo&amp;quot;,	c: &amp;quot;\uf18a&amp;quot;},
+    {n: &amp;quot;fa-renren&amp;quot;,	c: &amp;quot;\uf18b&amp;quot;},
+    {n: &amp;quot;fa-pagelines&amp;quot;,	c: &amp;quot;\uf18c&amp;quot;},
+    {n: &amp;quot;fa-stack-exchange&amp;quot;,	c: &amp;quot;\uf18d&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-o-right&amp;quot;,	c: &amp;quot;\uf18e&amp;quot;},
+    {n: &amp;quot;fa-arrow-circle-o-left&amp;quot;,	c: &amp;quot;\uf190&amp;quot;},
+    {n: &amp;quot;fa-caret-square-o-left&amp;quot;,	c: &amp;quot;\uf191&amp;quot;},
+    {n: &amp;quot;fa-dot-circle-o&amp;quot;,	c: &amp;quot;\uf192&amp;quot;},
+    {n: &amp;quot;fa-wheelchair&amp;quot;,	c: &amp;quot;\uf193&amp;quot;},
+    {n: &amp;quot;fa-vimeo-square&amp;quot;,	c: &amp;quot;\uf194&amp;quot;},
+    {n: &amp;quot;fa-try&amp;quot;,	c: &amp;quot;\uf195&amp;quot;},
+    {n: &amp;quot;fa-plus-square-o&amp;quot;,	c: &amp;quot;\uf196&amp;quot;},
+    {n: &amp;quot;fa-space-shuttle&amp;quot;,	c: &amp;quot;\uf197&amp;quot;},
+    {n: &amp;quot;fa-slack&amp;quot;,	c: &amp;quot;\uf198&amp;quot;},
+    {n: &amp;quot;fa-envelope-square&amp;quot;,	c: &amp;quot;\uf199&amp;quot;},
+    {n: &amp;quot;fa-wordpress&amp;quot;,	c: &amp;quot;\uf19a&amp;quot;},
+    {n: &amp;quot;fa-openid&amp;quot;,	c: &amp;quot;\uf19b&amp;quot;},
+    {n: &amp;quot;fa-university&amp;quot;,	c: &amp;quot;\uf19c&amp;quot;},
+    {n: &amp;quot;fa-graduation-cap&amp;quot;,	c: &amp;quot;\uf19d&amp;quot;},
+    {n: &amp;quot;fa-yahoo&amp;quot;,	c: &amp;quot;\uf19e&amp;quot;},
+    {n: &amp;quot;fa-google&amp;quot;,	c: &amp;quot;\uf1a0&amp;quot;},
+    {n: &amp;quot;fa-reddit&amp;quot;,	c: &amp;quot;\uf1a1&amp;quot;},
+    {n: &amp;quot;fa-reddit-square&amp;quot;,	c: &amp;quot;\uf1a2&amp;quot;},
+    {n: &amp;quot;fa-stumbleupon-circle&amp;quot;,	c: &amp;quot;\uf1a3&amp;quot;},
+    {n: &amp;quot;fa-stumbleupon&amp;quot;,	c: &amp;quot;\uf1a4&amp;quot;},
+    {n: &amp;quot;fa-delicious&amp;quot;,	c: &amp;quot;\uf1a5&amp;quot;},
+    {n: &amp;quot;fa-digg&amp;quot;,	c: &amp;quot;\uf1a6&amp;quot;},
+    {n: &amp;quot;fa-pied-piper&amp;quot;,	c: &amp;quot;\uf1a7&amp;quot;},
+    {n: &amp;quot;fa-pied-piper-alt&amp;quot;,	c: &amp;quot;\uf1a8&amp;quot;},
+    {n: &amp;quot;fa-drupal&amp;quot;,	c: &amp;quot;\uf1a9&amp;quot;},
+    {n: &amp;quot;fa-joomla&amp;quot;,	c: &amp;quot;\uf1aa&amp;quot;},
+    {n: &amp;quot;fa-language&amp;quot;,	c: &amp;quot;\uf1ab&amp;quot;},
+    {n: &amp;quot;fa-fax&amp;quot;,	c: &amp;quot;\uf1ac&amp;quot;},
+    {n: &amp;quot;fa-building&amp;quot;,	c: &amp;quot;\uf1ad&amp;quot;},
+    {n: &amp;quot;fa-child&amp;quot;,	c: &amp;quot;\uf1ae&amp;quot;},
+    {n: &amp;quot;fa-paw&amp;quot;,	c: &amp;quot;\uf1b0&amp;quot;},
+    {n: &amp;quot;fa-spoon&amp;quot;,	c: &amp;quot;\uf1b1&amp;quot;},
+    {n: &amp;quot;fa-cube&amp;quot;,	c: &amp;quot;\uf1b2&amp;quot;},
+    {n: &amp;quot;fa-cubes&amp;quot;,	c: &amp;quot;\uf1b3&amp;quot;},
+    {n: &amp;quot;fa-behance&amp;quot;,	c: &amp;quot;\uf1b4&amp;quot;},
+    {n: &amp;quot;fa-behance-square&amp;quot;,	c: &amp;quot;\uf1b5&amp;quot;},
+    {n: &amp;quot;fa-steam&amp;quot;,	c: &amp;quot;\uf1b6&amp;quot;},
+    {n: &amp;quot;fa-steam-square&amp;quot;,	c: &amp;quot;\uf1b7&amp;quot;},
+    {n: &amp;quot;fa-recycle&amp;quot;,	c: &amp;quot;\uf1b8&amp;quot;},
+    {n: &amp;quot;fa-car&amp;quot;,	c: &amp;quot;\uf1b9&amp;quot;},
+    {n: &amp;quot;fa-taxi&amp;quot;,	c: &amp;quot;\uf1ba&amp;quot;},
+    {n: &amp;quot;fa-tree&amp;quot;,	c: &amp;quot;\uf1bb&amp;quot;},
+    {n: &amp;quot;fa-spotify&amp;quot;,	c: &amp;quot;\uf1bc&amp;quot;},
+    {n: &amp;quot;fa-deviantart&amp;quot;,	c: &amp;quot;\uf1bd&amp;quot;},
+    {n: &amp;quot;fa-soundcloud&amp;quot;,	c: &amp;quot;\uf1be&amp;quot;},
+    {n: &amp;quot;fa-database&amp;quot;,	c: &amp;quot;\uf1c0&amp;quot;},
+    {n: &amp;quot;fa-file-pdf-o&amp;quot;,	c: &amp;quot;\uf1c1&amp;quot;},
+    {n: &amp;quot;fa-file-word-o&amp;quot;,	c: &amp;quot;\uf1c2&amp;quot;},
+    {n: &amp;quot;fa-file-excel-o&amp;quot;,	c: &amp;quot;\uf1c3&amp;quot;},
+    {n: &amp;quot;fa-file-powerpoint-o&amp;quot;,	c: &amp;quot;\uf1c4&amp;quot;},
+    {n: &amp;quot;fa-file-image-o&amp;quot;,	c: &amp;quot;\uf1c5&amp;quot;},
+    {n: &amp;quot;fa-file-archive-o&amp;quot;,	c: &amp;quot;\uf1c6&amp;quot;},
+    {n: &amp;quot;fa-file-audio-o&amp;quot;,	c: &amp;quot;\uf1c7&amp;quot;},
+    {n: &amp;quot;fa-file-video-o&amp;quot;,	c: &amp;quot;\uf1c8&amp;quot;},
+    {n: &amp;quot;fa-file-code-o&amp;quot;,	c: &amp;quot;\uf1c9&amp;quot;},
+    {n: &amp;quot;fa-vine&amp;quot;,	c: &amp;quot;\uf1ca&amp;quot;},
+    {n: &amp;quot;fa-codepen&amp;quot;,	c: &amp;quot;\uf1cb&amp;quot;},
+    {n: &amp;quot;fa-jsfiddle&amp;quot;,	c: &amp;quot;\uf1cc&amp;quot;},
+    {n: &amp;quot;fa-life-ring&amp;quot;,	c: &amp;quot;\uf1cd&amp;quot;},
+    {n: &amp;quot;fa-circle-o-notch&amp;quot;,	c: &amp;quot;\uf1ce&amp;quot;},
+    {n: &amp;quot;fa-rebel&amp;quot;,	c: &amp;quot;\uf1d0&amp;quot;},
+    {n: &amp;quot;fa-empire&amp;quot;,	c: &amp;quot;\uf1d1&amp;quot;},
+    {n: &amp;quot;fa-git-square&amp;quot;,	c: &amp;quot;\uf1d2&amp;quot;},
+    {n: &amp;quot;fa-git&amp;quot;,	c: &amp;quot;\uf1d3&amp;quot;},
+    {n: &amp;quot;fa-hacker-news&amp;quot;,	c: &amp;quot;\uf1d4&amp;quot;},
+    {n: &amp;quot;fa-tencent-weibo&amp;quot;,	c: &amp;quot;\uf1d5&amp;quot;},
+    {n: &amp;quot;fa-qq&amp;quot;,	c: &amp;quot;\uf1d6&amp;quot;},
+    {n: &amp;quot;fa-weixin&amp;quot;,	c: &amp;quot;\uf1d7&amp;quot;},
+    {n: &amp;quot;fa-paper-plane&amp;quot;,	c: &amp;quot;\uf1d8&amp;quot;},
+    {n: &amp;quot;fa-paper-plane-o&amp;quot;,	c: &amp;quot;\uf1d9&amp;quot;},
+    {n: &amp;quot;fa-history&amp;quot;,	c: &amp;quot;\uf1da&amp;quot;},
+    {n: &amp;quot;fa-circle-thin&amp;quot;,	c: &amp;quot;\uf1db&amp;quot;},
+    {n: &amp;quot;fa-header&amp;quot;,	c: &amp;quot;\uf1dc&amp;quot;},
+    {n: &amp;quot;fa-paragraph&amp;quot;,	c: &amp;quot;\uf1dd&amp;quot;},
+    {n: &amp;quot;fa-sliders&amp;quot;,	c: &amp;quot;\uf1de&amp;quot;},
+    {n: &amp;quot;fa-share-alt&amp;quot;,	c: &amp;quot;\uf1e0&amp;quot;},
+    {n: &amp;quot;fa-share-alt-square&amp;quot;,	c: &amp;quot;\uf1e1&amp;quot;},
+    {n: &amp;quot;fa-bomb&amp;quot;,	c: &amp;quot;\uf1e2&amp;quot;},
+    {n: &amp;quot;fa-futbol-o&amp;quot;,	c: &amp;quot;\uf1e3&amp;quot;},
+    {n: &amp;quot;fa-tty&amp;quot;,	c: &amp;quot;\uf1e4&amp;quot;},
+    {n: &amp;quot;fa-binoculars&amp;quot;,	c: &amp;quot;\uf1e5&amp;quot;},
+    {n: &amp;quot;fa-plug&amp;quot;,	c: &amp;quot;\uf1e6&amp;quot;},
+    {n: &amp;quot;fa-slideshare&amp;quot;,	c: &amp;quot;\uf1e7&amp;quot;},
+    {n: &amp;quot;fa-twitch&amp;quot;,	c: &amp;quot;\uf1e8&amp;quot;},
+    {n: &amp;quot;fa-yelp&amp;quot;,	c: &amp;quot;\uf1e9&amp;quot;},
+    {n: &amp;quot;fa-newspaper-o&amp;quot;,	c: &amp;quot;\uf1ea&amp;quot;},
+    {n: &amp;quot;fa-wifi&amp;quot;,	c: &amp;quot;\uf1eb&amp;quot;},
+    {n: &amp;quot;fa-calculator&amp;quot;,	c: &amp;quot;\uf1ec&amp;quot;},
+    {n: &amp;quot;fa-paypal&amp;quot;,	c: &amp;quot;\uf1ed&amp;quot;},
+    {n: &amp;quot;fa-google-wallet&amp;quot;,	c: &amp;quot;\uf1ee&amp;quot;},
+    {n: &amp;quot;fa-cc-visa&amp;quot;,	c: &amp;quot;\uf1f0&amp;quot;},
+    {n: &amp;quot;fa-cc-mastercard&amp;quot;,	c: &amp;quot;\uf1f1&amp;quot;},
+    {n: &amp;quot;fa-cc-discover&amp;quot;,	c: &amp;quot;\uf1f2&amp;quot;},
+    {n: &amp;quot;fa-cc-amex&amp;quot;,	c: &amp;quot;\uf1f3&amp;quot;},
+    {n: &amp;quot;fa-cc-paypal&amp;quot;,	c: &amp;quot;\uf1f4&amp;quot;},
+    {n: &amp;quot;fa-cc-stripe&amp;quot;,	c: &amp;quot;\uf1f5&amp;quot;},
+    {n: &amp;quot;fa-bell-slash&amp;quot;,	c: &amp;quot;\uf1f6&amp;quot;},
+    {n: &amp;quot;fa-bell-slash-o&amp;quot;,	c: &amp;quot;\uf1f7&amp;quot;},
+    {n: &amp;quot;fa-trash&amp;quot;,	c: &amp;quot;\uf1f8&amp;quot;},
+    {n: &amp;quot;fa-copyright&amp;quot;,	c: &amp;quot;\uf1f9&amp;quot;},
+    {n: &amp;quot;fa-at&amp;quot;,	c: &amp;quot;\uf1fa&amp;quot;},
+    {n: &amp;quot;fa-eyedropper&amp;quot;,	c: &amp;quot;\uf1fb&amp;quot;},
+    {n: &amp;quot;fa-paint-brush&amp;quot;,	c: &amp;quot;\uf1fc&amp;quot;},
+    {n: &amp;quot;fa-birthday-cake&amp;quot;,	c: &amp;quot;\uf1fd&amp;quot;},
+    {n: &amp;quot;fa-area-chart&amp;quot;,	c: &amp;quot;\uf1fe&amp;quot;},
+    {n: &amp;quot;fa-pie-chart&amp;quot;,	c: &amp;quot;\uf200&amp;quot;},
+    {n: &amp;quot;fa-line-chart&amp;quot;,	c: &amp;quot;\uf201&amp;quot;},
+    {n: &amp;quot;fa-lastfm&amp;quot;,	c: &amp;quot;\uf202&amp;quot;},
+    {n: &amp;quot;fa-lastfm-square&amp;quot;,	c: &amp;quot;\uf203&amp;quot;},
+    {n: &amp;quot;fa-toggle-off&amp;quot;,	c: &amp;quot;\uf204&amp;quot;},
+    {n: &amp;quot;fa-toggle-on&amp;quot;,	c: &amp;quot;\uf205&amp;quot;},
+    {n: &amp;quot;fa-bicycle&amp;quot;,	c: &amp;quot;\uf206&amp;quot;},
+    {n: &amp;quot;fa-bus&amp;quot;,	c: &amp;quot;\uf207&amp;quot;},
+    {n: &amp;quot;fa-ioxhost&amp;quot;,	c: &amp;quot;\uf208&amp;quot;},
+    {n: &amp;quot;fa-angellist&amp;quot;,	c: &amp;quot;\uf209&amp;quot;},
+    {n: &amp;quot;fa-cc&amp;quot;,	c: &amp;quot;\uf20a&amp;quot;},
+    {n: &amp;quot;fa-ils&amp;quot;,	c: &amp;quot;\uf20b&amp;quot;},
+    {n: &amp;quot;fa-meanpath&amp;quot;,	c: &amp;quot;\uf20c&amp;quot;},
+    {n: &amp;quot;fa-buysellads&amp;quot;,	c: &amp;quot;\uf20d&amp;quot;},
+    {n: &amp;quot;fa-connectdevelop&amp;quot;,	c: &amp;quot;\uf20e&amp;quot;},
+    {n: &amp;quot;fa-dashcube&amp;quot;,	c: &amp;quot;\uf210&amp;quot;},
+    {n: &amp;quot;fa-forumbee&amp;quot;,	c: &amp;quot;\uf211&amp;quot;},
+    {n: &amp;quot;fa-leanpub&amp;quot;,	c: &amp;quot;\uf212&amp;quot;},
+    {n: &amp;quot;fa-sellsy&amp;quot;,	c: &amp;quot;\uf213&amp;quot;},
+    {n: &amp;quot;fa-shirtsinbulk&amp;quot;,	c: &amp;quot;\uf214&amp;quot;},
+    {n: &amp;quot;fa-simplybuilt&amp;quot;,	c: &amp;quot;\uf215&amp;quot;},
+    {n: &amp;quot;fa-skyatlas&amp;quot;,	c: &amp;quot;\uf216&amp;quot;},
+    {n: &amp;quot;fa-cart-plus&amp;quot;,	c: &amp;quot;\uf217&amp;quot;},
+    {n: &amp;quot;fa-cart-arrow-down&amp;quot;,	c: &amp;quot;\uf218&amp;quot;},
+    {n: &amp;quot;fa-diamond&amp;quot;,	c: &amp;quot;\uf219&amp;quot;},
+    {n: &amp;quot;fa-ship&amp;quot;,	c: &amp;quot;\uf21a&amp;quot;},
+    {n: &amp;quot;fa-user-secret&amp;quot;,	c: &amp;quot;\uf21b&amp;quot;},
+    {n: &amp;quot;fa-motorcycle&amp;quot;,	c: &amp;quot;\uf21c&amp;quot;},
+    {n: &amp;quot;fa-street-view&amp;quot;,	c: &amp;quot;\uf21d&amp;quot;},
+    {n: &amp;quot;fa-heartbeat&amp;quot;,	c: &amp;quot;\uf21e&amp;quot;},
+    {n: &amp;quot;fa-venus&amp;quot;,	c: &amp;quot;\uf221&amp;quot;},
+    {n: &amp;quot;fa-mars&amp;quot;,	c: &amp;quot;\uf222&amp;quot;},
+    {n: &amp;quot;fa-mercury&amp;quot;,	c: &amp;quot;\uf223&amp;quot;},
+    {n: &amp;quot;fa-transgender&amp;quot;,	c: &amp;quot;\uf224&amp;quot;},
+    {n: &amp;quot;fa-transgender-alt&amp;quot;,	c: &amp;quot;\uf225&amp;quot;},
+    {n: &amp;quot;fa-venus-double&amp;quot;,	c: &amp;quot;\uf226&amp;quot;},
+    {n: &amp;quot;fa-mars-double&amp;quot;,	c: &amp;quot;\uf227&amp;quot;},
+    {n: &amp;quot;fa-venus-mars&amp;quot;,	c: &amp;quot;\uf228&amp;quot;},
+    {n: &amp;quot;fa-mars-stroke&amp;quot;,	c: &amp;quot;\uf229&amp;quot;},
+    {n: &amp;quot;fa-mars-stroke-v&amp;quot;,	c: &amp;quot;\uf22a&amp;quot;},
+    {n: &amp;quot;fa-mars-stroke-h&amp;quot;,	c: &amp;quot;\uf22b&amp;quot;},
+    {n: &amp;quot;fa-neuter&amp;quot;,	c: &amp;quot;\uf22c&amp;quot;},
+    {n: &amp;quot;fa-genderless&amp;quot;,	c: &amp;quot;\uf22d&amp;quot;},
+    {n: &amp;quot;fa-facebook-official&amp;quot;,	c: &amp;quot;\uf230&amp;quot;},
+    {n: &amp;quot;fa-pinterest-p&amp;quot;,	c: &amp;quot;\uf231&amp;quot;},
+    {n: &amp;quot;fa-whatsapp&amp;quot;,	c: &amp;quot;\uf232&amp;quot;},
+    {n: &amp;quot;fa-server&amp;quot;,	c: &amp;quot;\uf233&amp;quot;},
+    {n: &amp;quot;fa-user-plus&amp;quot;,	c: &amp;quot;\uf234&amp;quot;},
+    {n: &amp;quot;fa-user-times&amp;quot;,	c: &amp;quot;\uf235&amp;quot;},
+    {n: &amp;quot;fa-bed&amp;quot;,	c: &amp;quot;\uf236&amp;quot;},
+    {n: &amp;quot;fa-viacoin&amp;quot;,	c: &amp;quot;\uf237&amp;quot;},
+    {n: &amp;quot;fa-train&amp;quot;,	c: &amp;quot;\uf238&amp;quot;},
+    {n: &amp;quot;fa-subway&amp;quot;,	c: &amp;quot;\uf239&amp;quot;},
+    {n: &amp;quot;fa-medium&amp;quot;,	c: &amp;quot;\uf23a&amp;quot;},
+    {n: &amp;quot;fa-y-combinator&amp;quot;,	c: &amp;quot;\uf23b&amp;quot;},
+    {n: &amp;quot;fa-optin-monster&amp;quot;,	c: &amp;quot;\uf23c&amp;quot;},
+    {n: &amp;quot;fa-opencart&amp;quot;,	c: &amp;quot;\uf23d&amp;quot;},
+    {n: &amp;quot;fa-expeditedssl&amp;quot;,	c: &amp;quot;\uf23e&amp;quot;},
+    {n: &amp;quot;fa-battery-full&amp;quot;,	c: &amp;quot;\uf240&amp;quot;},
+    {n: &amp;quot;fa-battery-three-quarters&amp;quot;,	c: &amp;quot;\uf241&amp;quot;},
+    {n: &amp;quot;fa-battery-half&amp;quot;,	c: &amp;quot;\uf242&amp;quot;},
+    {n: &amp;quot;fa-battery-quarter&amp;quot;,	c: &amp;quot;\uf243&amp;quot;},
+    {n: &amp;quot;fa-battery-empty&amp;quot;,	c: &amp;quot;\uf244&amp;quot;},
+    {n: &amp;quot;fa-mouse-pointer&amp;quot;,	c: &amp;quot;\uf245&amp;quot;},
+    {n: &amp;quot;fa-i-cursor&amp;quot;,	c: &amp;quot;\uf246&amp;quot;},
+    {n: &amp;quot;fa-object-group&amp;quot;,	c: &amp;quot;\uf247&amp;quot;},
+    {n: &amp;quot;fa-object-ungroup&amp;quot;,	c: &amp;quot;\uf248&amp;quot;},
+    {n: &amp;quot;fa-sticky-note&amp;quot;,	c: &amp;quot;\uf249&amp;quot;},
+    {n: &amp;quot;fa-sticky-note-o&amp;quot;,	c: &amp;quot;\uf24a&amp;quot;},
+    {n: &amp;quot;fa-cc-jcb&amp;quot;,	c: &amp;quot;\uf24b&amp;quot;},
+    {n: &amp;quot;fa-cc-diners-club&amp;quot;,	c: &amp;quot;\uf24c&amp;quot;},
+    {n: &amp;quot;fa-clone&amp;quot;,	c: &amp;quot;\uf24d&amp;quot;},
+    {n: &amp;quot;fa-balance-scale&amp;quot;,	c: &amp;quot;\uf24e&amp;quot;},
+    {n: &amp;quot;fa-hourglass-o&amp;quot;,	c: &amp;quot;\uf250&amp;quot;},
+    {n: &amp;quot;fa-hourglass-start&amp;quot;,	c: &amp;quot;\uf251&amp;quot;},
+    {n: &amp;quot;fa-hourglass-half&amp;quot;,	c: &amp;quot;\uf252&amp;quot;},
+    {n: &amp;quot;fa-hourglass-end&amp;quot;,	c: &amp;quot;\uf253&amp;quot;},
+    {n: &amp;quot;fa-hourglass&amp;quot;,	c: &amp;quot;\uf254&amp;quot;},
+    {n: &amp;quot;fa-hand-rock-o&amp;quot;,	c: &amp;quot;\uf255&amp;quot;},
+    {n: &amp;quot;fa-hand-paper-o&amp;quot;,	c: &amp;quot;\uf256&amp;quot;},
+    {n: &amp;quot;fa-hand-scissors-o&amp;quot;,	c: &amp;quot;\uf257&amp;quot;},
+    {n: &amp;quot;fa-hand-lizard-o&amp;quot;,	c: &amp;quot;\uf258&amp;quot;},
+    {n: &amp;quot;fa-hand-spock-o&amp;quot;,	c: &amp;quot;\uf259&amp;quot;},
+    {n: &amp;quot;fa-hand-pointer-o&amp;quot;,	c: &amp;quot;\uf25a&amp;quot;},
+    {n: &amp;quot;fa-hand-peace-o&amp;quot;,	c: &amp;quot;\uf25b&amp;quot;},
+    {n: &amp;quot;fa-trademark&amp;quot;,	c: &amp;quot;\uf25c&amp;quot;},
+    {n: &amp;quot;fa-registered&amp;quot;,	c: &amp;quot;\uf25d&amp;quot;},
+    {n: &amp;quot;fa-creative-commons&amp;quot;,	c: &amp;quot;\uf25e&amp;quot;},
+    {n: &amp;quot;fa-gg&amp;quot;,	c: &amp;quot;\uf260&amp;quot;},
+    {n: &amp;quot;fa-gg-circle&amp;quot;,	c: &amp;quot;\uf261&amp;quot;},
+    {n: &amp;quot;fa-tripadvisor&amp;quot;,	c: &amp;quot;\uf262&amp;quot;},
+    {n: &amp;quot;fa-odnoklassniki&amp;quot;,	c: &amp;quot;\uf263&amp;quot;},
+    {n: &amp;quot;fa-odnoklassniki-square&amp;quot;,	c: &amp;quot;\uf264&amp;quot;},
+    {n: &amp;quot;fa-get-pocket&amp;quot;,	c: &amp;quot;\uf265&amp;quot;},
+    {n: &amp;quot;fa-wikipedia-w&amp;quot;,	c: &amp;quot;\uf266&amp;quot;},
+    {n: &amp;quot;fa-safari&amp;quot;,	c: &amp;quot;\uf267&amp;quot;},
+    {n: &amp;quot;fa-chrome&amp;quot;,	c: &amp;quot;\uf268&amp;quot;},
+    {n: &amp;quot;fa-firefox&amp;quot;,	c: &amp;quot;\uf269&amp;quot;},
+    {n: &amp;quot;fa-opera&amp;quot;,	c: &amp;quot;\uf26a&amp;quot;},
+    {n: &amp;quot;fa-internet-explorer&amp;quot;,	c: &amp;quot;\uf26b&amp;quot;},
+    {n: &amp;quot;fa-television&amp;quot;,	c: &amp;quot;\uf26c&amp;quot;},
+    {n: &amp;quot;fa-contao&amp;quot;,	c: &amp;quot;\uf26d&amp;quot;},
+    {n: &amp;quot;fa-500px&amp;quot;,	c: &amp;quot;\uf26e&amp;quot;},
+    {n: &amp;quot;fa-amazon&amp;quot;,	c: &amp;quot;\uf270&amp;quot;},
+    {n: &amp;quot;fa-calendar-plus-o&amp;quot;,	c: &amp;quot;\uf271&amp;quot;},
+    {n: &amp;quot;fa-calendar-minus-o&amp;quot;,	c: &amp;quot;\uf272&amp;quot;},
+    {n: &amp;quot;fa-calendar-times-o&amp;quot;,	c: &amp;quot;\uf273&amp;quot;},
+    {n: &amp;quot;fa-calendar-check-o&amp;quot;,	c: &amp;quot;\uf274&amp;quot;},
+    {n: &amp;quot;fa-industry&amp;quot;,	c: &amp;quot;\uf275&amp;quot;},
+    {n: &amp;quot;fa-map-pin&amp;quot;,	c: &amp;quot;\uf276&amp;quot;},
+    {n: &amp;quot;fa-map-signs&amp;quot;,	c: &amp;quot;\uf277&amp;quot;},
+    {n: &amp;quot;fa-map-o&amp;quot;,	c: &amp;quot;\uf278&amp;quot;},
+    {n: &amp;quot;fa-map&amp;quot;,	c: &amp;quot;\uf279&amp;quot;},
+    {n: &amp;quot;fa-commenting&amp;quot;,	c: &amp;quot;\uf27a&amp;quot;},
+    {n: &amp;quot;fa-commenting-o&amp;quot;,	c: &amp;quot;\uf27b&amp;quot;},
+    {n: &amp;quot;fa-houzz&amp;quot;,	c: &amp;quot;\uf27c&amp;quot;},
+    {n: &amp;quot;fa-vimeo&amp;quot;,	c: &amp;quot;\uf27d&amp;quot;},
+    {n: &amp;quot;fa-black-tie&amp;quot;,	c: &amp;quot;\uf27e&amp;quot;},
+    {n: &amp;quot;fa-fonticons&amp;quot;,	c: &amp;quot;\uf280&amp;quot;}
+  ];
+})();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;File di atas berisi objek (instance dari sebuah fungsi). Objek ini melakukan pemanggilan fungsi&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tabris.app.registerFont('FontAwesome', './res/font/fontawesome-webfont.ttf#'+this.font);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;sehingga Anda harus memastikan bahwa nama file dan struktur folder benar-benar sesuai dengan yang ada pada kode di atas.&lt;/p&gt;
+&lt;p&gt;Kode selanjutnya adalah fungsi &lt;code&gt;fa( )&lt;/code&gt; yang menerima parameter string, yang kemudian memeriksanya dan mengganti class-class ikon FontAwesome dengan karakter ikon yang sesuai. Perhatikan bahwa kode &lt;code&gt;ret = ret.split('{'+glyph.n+'}').join(glyph.c);&lt;/code&gt; memerlukan kurung kurawal untuk menandai class ikon, contoh:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;fa-map&lt;/code&gt; harus ditulis &lt;code&gt;{fa-map}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fa-cog&lt;/code&gt; harus ditulis &lt;code&gt;{fa-cog}&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Maksud konvensi penulisan ini agar class yang direplace menjadi karakter icon hanya class yang benar-benar akan direplace, dan menghindari proses replace pada string yang kebetulan berisi teks yang sama dengan nama class. Dengan konvensi ini, developer dapat membuat string seperti berikut:&lt;br&gt;
+&lt;code&gt;let Teks = 'Class fa-hourglass akan menghasilkan icon {fa-hourglass}';&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Selanjutnya untuk diperhatikan, setiap widget/komponen UI yang menggunakan utilitas ini harus menggunakan font FontAwesome untuk property Text-nya:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;new TextView({
+  right: 10, centerY: 0, width: 140,
+  font: 'bold 12px FontAwesome',
+  textColor: '#212121'
+  text: TabrisFontAwesome.fa(
+    'Class fa-hourglass akan menghasilkan icon {fa-hourglass}'
+  );
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Kode Utama&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Setelah kita siapkan utilitas, mari kita buka file &lt;strong&gt;app.js&lt;/strong&gt; dan ganti isinya dengan kode berikut:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;const {
+  NavigationView, 
+  Page, 
+  CollectionView, 
+  Composite, 
+  TextView, 
+  ui
+} = require('tabris');
+
+// Include utilitas:
+const TabrisFontAwesome = require('./TabrisFontAwesome');
+
+let navigationView = new NavigationView({
+  left: 0, top: 0, right: 0, bottom: 0
+}).appendTo(ui.contentView);
+
+let page = new Page({title: 'FontAwesome Icons'}).appendTo(navigationView);
+let glyphs = TabrisFontAwesome.glyphTable;
+new CollectionView({
+  left:0, top:0, bottom:0, right:0,
+  cellHeight: 48,
+  itemCount:glyphs.length,
+  createCell: function(){
+    let cell = new Composite();
+    let f = '14px '+TabrisFontAwesome.font;
+    new Composite({
+      id: 'garis',
+      left: 0, right: 0, bottom: 0, height: 1,
+      background: '#e7e7e7'
+    }).appendTo(cell);
+    new TextView({
+      id: 'glyph',
+      alignment: 'right',
+      right: 10, centerY: 0, width: 140,
+      font: f,
+      textColor: '#212121'
+    }).appendTo(cell);
+    new TextView({
+      id: 'name',
+      left: 10, right: ['prev()', 10], centerY: 0,
+      font: f,
+      textColor: '#212121'
+    }).appendTo(cell);
+    return cell;
+  },
+  updateCell: function(cell, index){
+    let glyph = glyphs[index];  
+    cell.apply({
+      '#name': {text: glyph.n},
+      '#glyph': {text: TabrisFontAwesome.fa('{'+glyph.n+'}')}
+    });   
+  },
+}).appendTo(page);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Menjalankan Aplikasi&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Selanjutnya, dari folder utama projek, buka terminal/command prompt dan jalankan perintah&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tabris run ios|android
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Alternatifnya, bisa juga Anda jalankan &lt;code&gt;tabris serve -w&lt;/code&gt; dan gunakan Tabris Developer App untuk menjalankan aplikasi.&lt;/p&gt;
+&lt;p&gt;Berikut tampilan projek di atas:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2373/content/images/2019/03/Simulator-Screen-Shot---iPhone-X---2019-03-13-at-23.20.58-1.png" alt="Menggunakan Glyphs/Ikon FontAwesome"&gt;&lt;/p&gt;
+&lt;p&gt;Selamat berkreasi!&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Bekerja Dengan CollectionView</title><description>Tampilan UI berbentuk daftar akan sangat mudah dikelola jika menggunakan CollectionView.</description><link>http://localhost:2373/bekerja-dengan-collectionview/</link><guid isPermaLink="false">5c7535c4b366c66a6d446e57</guid><category>Tabris JS</category><category>UI</category><category>iOS</category><category>Android</category><category>CollectionView</category><dc:creator>Joko Rivai</dc:creator><pubDate>Tue, 26 Feb 2019 12:52:06 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1521579498714-ff08ba4836ab?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1521579498714-ff08ba4836ab?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ" alt="Bekerja Dengan CollectionView"&gt;&lt;p&gt;Tampilan UI berbentuk daftar akan sangat mudah dikelola jika menggunakan CollectionView.&lt;/p&gt;
+&lt;p&gt;TabrisJS mempunyai komponen UI yang sangat mumpuni dalam mengelola list atau daftar. CollectionView pada TabriJS merupakan komponen bawaan Android namun oleh TabrisJS telah dibungkus dengan JavasSript sehingga dapat dengan mudah digunakan tanpa harus melakukan koding manual di Java. Ini sangat bermanfaat apabila aplikasi yang kita bangun bukan hanya diperuntukkan bagi platform Android tapi juga untuk platform iOS.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Struktur CollectionView&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Pada TabrisJS, CollectionView terdiri dari sebuah view utama yang di dalamnya terdapat sel-sel yang umumnya disebut sebagai &lt;em&gt;list item&lt;/em&gt;. Setiap sel merupakan sebuah view juga yang dapat menampung komponen/view lainnya beserta data yang sifatnya eksklusif bagi sel tersebut.&lt;/p&gt;
+&lt;p&gt;Kita akan melihat contoh sederhana aplikasi yang dibangun dengan TabrisJS untuk menampilkan data pada CollectionView.&lt;br&gt;
+Data yang ditampilkan harus berbentuk &lt;em&gt;array&lt;/em&gt; yang elemennya dapat berupa sekumpulan string, angka, atau bahkan data kompleks yang terdiri dari Objek JavaScript (JSON). Karena data dapat berisi JSON maka kita dapat dengan mudah melakukan loading data dari server (REST API, WebSocket, Push Notification, dsb.) untuk dipopulasikan ke dalam CollectionView.&lt;/p&gt;
+&lt;p&gt;Contoh data yang dapat digunakan:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;let data = [{
+  nama: 'TabrisJS',
+  sifat: 'Hybrid - Native',
+  popularitas: 9
+}, {
+  nama: 'NativeScript',
+  sifat: 'Hybrid - Native',
+  popularitas: 8.5
+} /*, {....
+} */];&lt;/code&gt;&lt;/pre&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Menampilkan Image Pada Tabris JS</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Satu gambar mewakili seribu kata, demikian kata pujangga...&lt;/p&gt;
+&lt;p&gt;Dah ah, besok lanjut ya...&lt;/p&gt;
+&lt;p&gt;deh, di github kok gak berubah?&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</description><link>http://localhost:2373/menampilkan-image-pada-tabris-js/</link><guid isPermaLink="false">5b1d4afc72f3421e345b366a</guid><category>Tabris JS</category><category>UI</category><category>iOS</category><category>Android</category><dc:creator>Joko Rivai</dc:creator><pubDate>Sun, 10 Jun 2018 16:04:46 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1519483057039-eced84d8025a?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=e41487274c66a4d3cd7ac8e0550a3860" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1519483057039-eced84d8025a?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=e41487274c66a4d3cd7ac8e0550a3860" alt="Menampilkan Image Pada Tabris JS"&gt;&lt;p&gt;Satu gambar mewakili seribu kata, demikian kata pujangga...&lt;/p&gt;
+&lt;p&gt;Dah ah, besok lanjut ya...&lt;/p&gt;
+&lt;p&gt;deh, di github kok gak berubah?&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Membuat Page Aplikasi Tabris JS</title><description>Sangat mudah membuat Page pada UI aplikasi yang dibangun dengan Tabris JS.</description><link>http://localhost:2373/membuat-page-aplikasi-tabris-js/</link><guid isPermaLink="false">5b1d399d72f3421e345b3660</guid><category>Tabris JS</category><category>Page</category><category>UI</category><category>iOS</category><category>Android</category><dc:creator>Joko Rivai</dc:creator><pubDate>Sun, 10 Jun 2018 14:48:59 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1525770041010-2a1233dd8152?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=48bedd6b6e643fed83abf85637dd0f7f" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1525770041010-2a1233dd8152?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=48bedd6b6e643fed83abf85637dd0f7f" alt="Membuat Page Aplikasi Tabris JS"&gt;&lt;p&gt;Tampilan UI pada Tabris JS, setara dengan Intent pada Android, disebut Page.&lt;/p&gt;
+&lt;p&gt;Komponen-komponen UI Tabris JS dapat ditampilkan langsung pada UI utama aplikasi, yaitu &lt;code&gt;tabris.ui.contentView&lt;/code&gt;, namun dalam aplikasi yang lebih kompleks perlu didesain UI yang lebih terorganisir dan terstruktur, sehingga memberikan UX (&lt;em&gt;User Experience&lt;/em&gt;) yang lebih baik dalam menggunakan aplikasi.&lt;/p&gt;
+&lt;p&gt;Page merupakan layer UI yang setara Intent di Android, yang dapat dibuat dan ditampilkan ketika diperlukan dan di-dispose (dibuang) ketika tidak lagi diperlukan - untuk menjaga performa aplikasi tetap baik.&lt;/p&gt;
+&lt;p&gt;Di Tabris JS, Page merupakan class turunan dari &lt;strong&gt;Composite&lt;/strong&gt;, yang merupakan class turunan juga dari class &lt;strong&gt;Widget&lt;/strong&gt;, sehingga property, event dan method yang tersedia pada class Composite dan Widget dapat pula digunakan pada class Page.&lt;/p&gt;
+&lt;p&gt;Untuk menggunakan Page, class Page harus dideklarasikan dulu dengan &lt;code&gt;const {Page} = require('tabris');&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Umumnya property dan event yang digunakan pada class Page adalah:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;autoDispose&lt;/code&gt; dengan nilai &lt;code&gt;true|false&lt;/code&gt; untuk menentukan apakah Page otomatis di-dispose saat Page tidak lagi aktif di UI, misalnya ketika tombol Home atau Back ditap oleh user. Nilai defaultnya adalah &lt;code&gt;true&lt;/code&gt;, karenanya ketika kita mendesain aplikasi di mana Page digunakan kembali, nilai property ini harus diset ke &lt;code&gt;false&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;image&lt;/code&gt; merupakan gambar/icon yang akan ditampilkan di navigation bar ketika page sedang aktif. Property ini berupa string (URL nama file) atau objek. Di Windows property ini tidak didukung.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title&lt;/code&gt; adalah judul page yang tampil di navigation bar ketika page aktif.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Sedangkan event-event onAppear dan onDisappear umunya digunakan untuk menginisialisasi page (misalnya me-load data, mengecek informasi login, dsb) ketika page diaktifkan di UI dan menyimpan informasi serta hal-hal lainnya ketika page akan dinonaktifkan dari UI.&lt;/p&gt;
+&lt;h2 id="membuatpage"&gt;Membuat Page&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://jokorivai.github.io/static/membuat-aplikasi-baru-pada-tabris-js/"&gt;Siapkan sebuah projek baru&lt;/a&gt; sebelum kita mulai.&lt;/p&gt;
+&lt;p&gt;Buka file &lt;code&gt;src/app.js&lt;/code&gt; dan kosongkan isinya, kemudian ketik kode berikut pada file tersebut:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// deklarasi class NavigationView, Page, Button dan UI
+const {NavigationView, Page, Button, ui} = require('tabris');
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;NavigationView diperlukan karena page harus ditampilkan di situ. NavigationView ini akan meng-handle back button pada Android, menampung daftar page yang tersedia pada aplikasi (saat runtime) dan mengatur perpindahan (navigasi) antar page.&lt;/p&gt;
+&lt;p&gt;Oke, tambahkan sebuah NavigationView:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let navView = new NavigationView({
+  left:0, top: 0, right: 0, bottom: 0
+}).appendTo(ui.contentView);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;NavigationView di atas kita beri nama &lt;code&gt;navView&lt;/code&gt;, yang menempati keseluruhan tampilan UI. Pada NavigationView ini kita pasang sebuah page dengan nama &lt;code&gt;page1&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let page1 = new Page({
+  title: 'Page Baru'
+}).appendTo(navView);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Sekadar meramaikan, mari kita tambahkan sebuah button pada &lt;code&gt;page1&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let btn = new Button({
+  top: 20,
+  centerX: 0,
+  text: 'Close Page'
+}).appendTo(page1);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;dan kira-kira apa fungsi button &lt;code&gt;btn&lt;/code&gt; ini? Yah, katakanlah untuk menutup page tadi dengan memanggil method &lt;code&gt;dispose()&lt;/code&gt; dari &lt;code&gt;page1&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;btn.on('select', function(){
+  page1.dispose();
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Bila tidak ada kesalahan pengetikan, silahkan jalankan projek Anda:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tabris run ios|android
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Semoga kompilasi sukses!&lt;br&gt;
+Berikut tampilan aplikasi di atas pada iOS simulator:&lt;br&gt;
+&lt;img src="http://localhost:2373/content/images/2018/06/Simulator-Screen-Shot---iPhone-X---2018-06-10-at-23.28.17.png#half" alt="Membuat Page Aplikasi Tabris JS" width="50%" style="border:1px solid black;"&gt;&lt;/p&gt;
+&lt;p&gt;Selamat berkreasi!&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Membuat Aplikasi Baru Pada Tabris JS</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Menyiapkan Aplikasi Baru Pada Tabris JS menggunakan Tabris CLI.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Bila Anda belum menginstal Tabris JS dan kelengkapannya, silahkan baca di sini: &lt;a href="https://jokorivai.github.io/static/membangun-aplikasi-pertama-dengan-tabris-js"&gt;Membangun Aplikasi Pertama Dengan Tabris JS&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Siapkan sebuah directory kosong untuk projek, misalnya &lt;code&gt;D:\TabrisJS\app-name-here&lt;/code&gt; (Windows) atau &lt;code&gt;~/TabrisJS/app-name-here&lt;/code&gt; (Mac).&lt;/p&gt;
+&lt;p&gt;Kemudian buat projek baru pada directory tersebut:&lt;/p&gt;
+&lt;p&gt;Mac:&lt;/p&gt;</description><link>http://localhost:2373/membuat-aplikasi-baru-pada-tabris-js/</link><guid isPermaLink="false">5b1d0b3072f3421e345b365c</guid><category>Getting Started</category><category>Tabris JS</category><dc:creator>Joko Rivai</dc:creator><pubDate>Sun, 10 Jun 2018 11:31:43 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1517292987719-0369a794ec0f?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=03ab0f1f7f7846337bb3826911dfb778" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1517292987719-0369a794ec0f?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=03ab0f1f7f7846337bb3826911dfb778" alt="Membuat Aplikasi Baru Pada Tabris JS"&gt;&lt;p&gt;Menyiapkan Aplikasi Baru Pada Tabris JS menggunakan Tabris CLI.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Bila Anda belum menginstal Tabris JS dan kelengkapannya, silahkan baca di sini: &lt;a href="https://jokorivai.github.io/static/membangun-aplikasi-pertama-dengan-tabris-js"&gt;Membangun Aplikasi Pertama Dengan Tabris JS&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Siapkan sebuah directory kosong untuk projek, misalnya &lt;code&gt;D:\TabrisJS\app-name-here&lt;/code&gt; (Windows) atau &lt;code&gt;~/TabrisJS/app-name-here&lt;/code&gt; (Mac).&lt;/p&gt;
+&lt;p&gt;Kemudian buat projek baru pada directory tersebut:&lt;/p&gt;
+&lt;p&gt;Mac:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd ~/TabrisJS/app-name-here
+tabris-init
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Windows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd &amp;quot;D:\TabrisJS\app-name-here
+tabris init
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Masukkan parameter yang diperlukan dan Tabris CLI akan membuat struktur projek untuk kita:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Jokos-MacBook-Pro:app-name-here jokorivai$ tabris init
+? Your project name app-name-here
+? Initial version 0.1.0
+? Type of project 1 - JavaScript App
+? App ID com.domain.appnamehere
+? App name App Name Here
+? Configure for IDE 1 - None
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Tunggu sampai proses pembuatan projek selesai.&lt;/p&gt;
+&lt;p&gt;Untuk mengecek dan menginstal dependency yang diperlukan, silahkan build projek:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tabris build android|ios
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Anda dapat memilih Android atau iOS untuk tiap kali build.&lt;br&gt;
+Tabris CLI akan memeriksa dan mengunduh dependency yang diperlukan dan menginstalnya ke projek - Anda memerlukan koneksi internet saat build perdana ini, baik untuk iOS maupun Android. Setelah proses build selesai dan sukses, kita bisa melanjutkan dengan proses selanjutnya.&lt;/p&gt;
+&lt;p&gt;Source code utama aplikasi adalah file &lt;code&gt;app.js&lt;/code&gt; yang berada dalam directory &lt;code&gt;D:\TabrisJS\app-name-here\src&lt;/code&gt; (Windows) atau &lt;code&gt;~/TabrisJS/app-name-here\src&lt;/code&gt; (Mac).&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Membuat Button Pada Aplikasi Mobile dengan Tabris JS</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Button atau tombol dapat dengan mudah dibuat pada Tabris JS.&lt;/p&gt;
+&lt;p&gt;Untuk membuat button, kita gunakan class &lt;strong&gt;Button&lt;/strong&gt; bawaan Tabris JS. Kita perlu mendeklarasikan class Button ini dengan &lt;code&gt;const {Button} = require('tabris');&lt;/code&gt;, kemudian setelah class tersedia, button dapat dibuat dengan &lt;code&gt;let button1 = new Button({});&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Berikut adalah beberapa property class Button yang&lt;/p&gt;</description><link>http://localhost:2373/membuat-button-pada-aplikasi-mobile-dengan-tabris-js/</link><guid isPermaLink="false">5b1c019d72f3421e345b3651</guid><category>Tabris JS</category><category>Button</category><category>iOS</category><category>Android</category><dc:creator>Joko Rivai</dc:creator><pubDate>Sun, 10 Jun 2018 11:07:44 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1457433575995-8407028a9970?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=6e0ca51aa7e06e3f3625b39355ad2619" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1457433575995-8407028a9970?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=6e0ca51aa7e06e3f3625b39355ad2619" alt="Membuat Button Pada Aplikasi Mobile dengan Tabris JS"&gt;&lt;p&gt;Button atau tombol dapat dengan mudah dibuat pada Tabris JS.&lt;/p&gt;
+&lt;p&gt;Untuk membuat button, kita gunakan class &lt;strong&gt;Button&lt;/strong&gt; bawaan Tabris JS. Kita perlu mendeklarasikan class Button ini dengan &lt;code&gt;const {Button} = require('tabris');&lt;/code&gt;, kemudian setelah class tersedia, button dapat dibuat dengan &lt;code&gt;let button1 = new Button({});&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Berikut adalah beberapa property class Button yang paling sering digunakan:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;aligment&lt;/code&gt; untuk mengatur perataan teks, dapat berisi &lt;code&gt;'left'&lt;/code&gt;, &lt;code&gt;'center'&lt;/code&gt; dan &lt;code&gt;'right'&lt;/code&gt;. Jika tidak diisi, defaultnya adalah &lt;code&gt;'center'&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;image&lt;/code&gt; untuk menampilkan icon pada Button. Nilai property ini dapat berupa url langsung atau objek. Nanti kita lihat pada contoh di bawah.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;text&lt;/code&gt; untuk menampilkan teks, isinya harus berupa string.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;textColor&lt;/code&gt; untuk menentukan warna text. Nilainya harus string yang sesuai dengan spesifikasi CSS colors&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Contoh nilai warna yang dapat diterapkan pada property &lt;code&gt;textColor&lt;/code&gt; pada Button adalah:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;textColor : &amp;quot;#f00&amp;quot;
+textColor : &amp;quot;#ff0000&amp;quot;
+textColor : &amp;quot;#ff000080&amp;quot; // 50% opacity red
+textColor : &amp;quot;#ff06&amp;quot; // 40% opacity yellow
+textColor : &amp;quot;rgb(255, 0, 0)&amp;quot;
+textColor : &amp;quot;rgba(255, 0, 0, 0.8)&amp;quot;
+textColor : &amp;quot;red&amp;quot;
+textColor : &amp;quot;initial&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Karena Button adalah class turunan dari &lt;strong&gt;Widget&lt;/strong&gt;, Button mewarisi banyak property, event dan method dari class Widget, antara lain: &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt;, &lt;code&gt;left&lt;/code&gt;, &lt;code&gt;top&lt;/code&gt;, &lt;code&gt;right&lt;/code&gt;, &lt;code&gt;bottom&lt;/code&gt;, &lt;code&gt;centerY&lt;/code&gt;, &lt;code&gt;center&lt;/code&gt;, &lt;code&gt;opacity&lt;/code&gt;, &lt;code&gt;cornerRadius&lt;/code&gt;, &lt;code&gt;layoutData&lt;/code&gt;, &lt;code&gt;visible&lt;/code&gt;, &lt;code&gt;enabled&lt;/code&gt;, &lt;code&gt;font&lt;/code&gt;, &lt;code&gt;id&lt;/code&gt;, &lt;code&gt;class&lt;/code&gt;, &lt;code&gt;background&lt;/code&gt; dan &lt;code&gt;backgroundColor&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Setelah instance Button dibuat, panggil method &lt;code&gt;.appendTo(parentObject)&lt;/code&gt; untuk menampilkannya ke parentObject. parentObject dapat berupa &lt;code&gt;Page&lt;/code&gt;, &lt;code&gt;Widget&lt;/code&gt; lainnya, atau side bar (&lt;code&gt;SideMenu&lt;/code&gt;) dan bisa juga langsung ke &lt;code&gt;tabris.ui.contentView&lt;/code&gt; yang merupakan canvas utama aplikasi.&lt;/p&gt;
+&lt;p&gt;Mari kita lihat beberapa contoh Button:&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jokorivai.github.io/static/membuat-aplikasi-baru-pada-tabris-js/"&gt;Buat projek baru&lt;/a&gt;, kemudian kosongkan isi file &lt;code&gt;app.js&lt;/code&gt; deklarasikan class &lt;code&gt;Button&lt;/code&gt;, &lt;code&gt;ui&lt;/code&gt; pada file tersebut:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const {Button, ui} = require('tabris');
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Di bawahnya, tambahkan deklarasi tiga buah button. Button pertama akan berisi teks, button kedua berisi image dan yang terakhir berisi teks dan image.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let btn1 = new Button({
+  centerX: 0, top: 40,
+  text: 'Button 1'
+}).appendTo(ui.contentView);
+
+let btn2 = new Button({
+  centerX: 0, top: [btn1, 20],
+  image: './res/btn1.png'
+}).appendTo(ui.contentView);
+
+let btn3 = new Button({
+  centerX: 0, top: [btn2, 20],
+  image: {src: './res/btn1.png', width: 32, height: 32},
+  text: 'Button 3'
+}).appendTo(ui.contentView);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Perhatikan &lt;code&gt;btn2&lt;/code&gt;, di mana property &lt;code&gt;image&lt;/code&gt; menunjuk file &lt;code&gt;btn1.png&lt;/code&gt; pada folder &lt;code&gt;res&lt;/code&gt;, di manakah lokasi file ini pada directory projek? Tepat di dalam folder projek. Anda harus membuat manual folder &lt;code&gt;res&lt;/code&gt; ini dan menambahkan file-file yang dibutuhkan di dalamnya. Lihat struktur directory berikut:&lt;br&gt;
+&lt;img src="http://localhost:2373/content/images/2018/06/Screen-Shot-2018-06-10-at-19.45.27.png" alt="Membuat Button Pada Aplikasi Mobile dengan Tabris JS"&gt;&lt;br&gt;
+Perhatikan juga bahwa penyebutan nama projek harus menyebutkan directory utama projek, sehingga penulisannya adalah &lt;code&gt;./res/btn1.png&lt;/code&gt; bukannya &lt;code&gt;res/btn1.png&lt;/code&gt;. Selanjutnya perlu diketahui bahwa ukuran button &lt;code&gt;btn2&lt;/code&gt; akan menyesuaikan dengan ukuran image &lt;code&gt;btn1.png&lt;/code&gt; sehingga Anda perlu menggunakan file image yang ukurannya sesuai agar tidak merusak tampilan aplikasi nantinya.&lt;br&gt;
+Lanjut ke button &lt;code&gt;btn3&lt;/code&gt;, di situ properti image tidak diisi dengan &lt;code&gt;string&lt;/code&gt; nama file sebagaimana &lt;code&gt;btn2&lt;/code&gt;, tapi menggunakan object:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+    src: './res/btn1.png',
+    width: 32,
+    height: 32
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Tujuannya adalah fleksibilitas. Jika pada &lt;code&gt;btn2&lt;/code&gt; image ditampilkan dengan ukuran apa adanya sehingga ukuran button ikut menyesuaikan, pada &lt;code&gt;btn3&lt;/code&gt; kita dapat menentukan ukuran &lt;code&gt;width&lt;/code&gt; dan &lt;code&gt;height&lt;/code&gt; dari image yang ditampilkan, sehingga meskipun image aslinya berukuran besar atau lebih kecil, tetap akan ditampilkan dengan ukuran 32 x 32 piksel.&lt;/p&gt;
+&lt;p&gt;Untuk melihat tampilan ketiga button ini, jalankan projek dengan &lt;code&gt;tabris run ios|android&lt;/code&gt;&lt;br&gt;
+&lt;kbd&gt;&lt;img src="http://localhost:2373/content/images/2018/06/Screen-Shot-2018-06-10-at-20.00.03.png" alt="Membuat Button Pada Aplikasi Mobile dengan Tabris JS"&gt;&lt;/kbd&gt;&lt;/p&gt;
+&lt;h3 id="eventhandler"&gt;Event Handler&lt;/h3&gt;
+&lt;p&gt;Event utama pada button adalah onSelect, yaitu event yang terjadi ketika user melakukan tap pada button tersebut. Kita akan membuat satu event saja untuk button &lt;code&gt;btn1&lt;/code&gt; sebagai contoh. Anda dapat membuat sendiri event handler untuk button lainnya jika Anda suka.&lt;/p&gt;
+&lt;p&gt;Tambahkan kode berikut ke &lt;code&gt;app.js&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;btn1.on('select', function(){ btn2.enabled = false; });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Kode di atas akan men-disable button &lt;code&gt;btn2&lt;/code&gt; jika button &lt;code&gt;btn1&lt;/code&gt; di-tap user.&lt;/p&gt;
+&lt;p&gt;&lt;kbd&gt;&lt;img src="http://localhost:2373/content/images/2018/06/Simulator-Screen-Shot---iPhone-X---2018-06-10-at-20.06.42.png" alt="Membuat Button Pada Aplikasi Mobile dengan Tabris JS"&gt;&lt;/kbd&gt;&lt;/p&gt;
+&lt;p&gt;Selanjutnya dapat Anda kreasikan sendiri. Semoga bermanfaat.&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Tabris JS, QR Code Generator</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Untuk membuat QR Code, pakai Tabris JS sangat mudah!&lt;/p&gt;
+&lt;p&gt;QR Code adalah sejenis grafis yang berisi kode-kode/data tertentu yang di-encode, yang nantinya dapat dibaca kembali data aslinya. Proses membaca kembali dilakukan dengan pemindaian grafis &lt;em&gt;(scanning)&lt;/em&gt; yang nantinya di-decode untuk mendapatkan datanya. QR adalah singkatan dari &lt;em&gt;quick response&lt;/em&gt;. QR Code&lt;/p&gt;</description><link>http://localhost:2373/tabris-js-qr-code-generator/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d6e</guid><category>Getting Started</category><category>Tabris JS</category><dc:creator>Joko Rivai</dc:creator><pubDate>Fri, 08 Jun 2018 08:57:00 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1467007849282-42dad96c2312?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=6e3edb1ed96484267911f41022ea2045" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1467007849282-42dad96c2312?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=6e3edb1ed96484267911f41022ea2045" alt="Tabris JS, QR Code Generator"&gt;&lt;p&gt;Untuk membuat QR Code, pakai Tabris JS sangat mudah!&lt;/p&gt;
+&lt;p&gt;QR Code adalah sejenis grafis yang berisi kode-kode/data tertentu yang di-encode, yang nantinya dapat dibaca kembali data aslinya. Proses membaca kembali dilakukan dengan pemindaian grafis &lt;em&gt;(scanning)&lt;/em&gt; yang nantinya di-decode untuk mendapatkan datanya. QR adalah singkatan dari &lt;em&gt;quick response&lt;/em&gt;. QR Code mirip dengan barcode tipe lainnya, hanyasannya bentuknya adalah dua dimensi, yang beda dari barcode umumnya (satu dimensi).&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2373/content/images/2018/06/frame.png" alt="Tabris JS, QR Code Generator"&gt;&lt;/p&gt;
+&lt;p&gt;Kata &amp;quot;QR Code&amp;quot; adalah merek dagang terdaftar atas nama DENSO WAVE INCORPORATED, sebuah perusahaan yang bergerak di bidang otomotif di Jepang, yang mulai diciptakan tahun 1994. Kemampuan QR Code menampung data lebih banyak dari barcode biasa membuatnya cepat diadopsi oleh industri lainnya di luar otomotif, bahkan kini telah menjadi standar dalam dunia aplikasi mobile.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2373/content/images/2018/06/qr.jpg" alt="Tabris JS, QR Code Generator"&gt;&lt;/p&gt;
+&lt;p&gt;Nah, bagaimana kita dapat memanfaatkan QR Code ini dalam aplikasi mobile kita? Mari kita lihat bersama.&lt;/p&gt;
+&lt;p&gt;Siapkan sebuah projek baru. Anda dapat membaca panduan membuat projek baru aplikasi mobile dengan Tabris JS &lt;a href="https://jokorivai.github.io/static/membuat-aplikasi-baru-pada-tabris-js/"&gt;di sini&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="membuatqrcode"&gt;Membuat QR Code&lt;/h2&gt;
+&lt;p&gt;Tabris JS saat ini belum menyiapkan fitur untuk meng-generate QR Code sendiri, sehingga kita perlu menggunakan library tambahan. Jangan khawatir, tersedia sebuah library JavaScript untuk meng-generate QR Code buatan &lt;strong&gt;Kazuhiko Arase&lt;/strong&gt; yang dapat kita gunakan. Library ini telah di-porting agar kompatibel dengan Tabris JS oleh &lt;a href="https://jokorivai.github.io/static/author/buyut/"&gt;saya sendiri&lt;/a&gt;. Library ini telah saya publikasi di &lt;a href="https://github.com/jokorivai/cordova-plugin-tabrisjs-qrgen"&gt;Github&lt;/a&gt; dan tersedia juga sebagai &lt;a href="https://www.npmjs.com/package/cordova-plugin-tabrisjs-qrgen"&gt;package NPM&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Untuk menginstal library ini ke projek, kunjungi url &lt;a href="https://github.com/jokorivai/cordova-plugin-tabrisjs-qrgen"&gt;Repository Github&lt;/a&gt; dan unduh repository sebagai file ZIP.&lt;br&gt;
+&lt;img src="http://localhost:2373/content/images/2018/06/Screen-Shot-2018-06-09-at-00.54.14.png" alt="Tabris JS, QR Code Generator"&gt;&lt;/p&gt;
+&lt;p&gt;Ekstrak dan copy file &lt;code&gt;tabrisjsqrcode.js&lt;/code&gt; ke dalam directory &lt;code&gt;%projek%/src/&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Kemudian buka editor favorit Anda, dan buka file &lt;code&gt;%projek%/src/app.js&lt;/code&gt;.&lt;br&gt;
+Anda akan melihat source code default aplikasi:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;const {Button, TextView, ui} = require('tabris');
+
+let button = new Button({
+  centerX: 0, top: 100,
+  text: 'Show message'
+}).appendTo(ui.contentView);
+
+let textView = new TextView({
+  centerX: 0, top: [button, 50],
+  font: '24px'
+}).appendTo(ui.contentView);
+
+button.on('select', () =&amp;gt; {
+  textView.text = 'Tabris.js rocks!';
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Kini tambahkan deklarasi library QR Code generator dari plugin yang telah diinstal, dan sebuah Canvas. Kode dapat dimodifikasi menjadi seperti berikut:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-js"&gt;const {Button, TextView, Canvas, ui} = require('tabris');
+const QRGen = require('./tabrisjsqrcode.js');
+
+let button = new Button({
+  centerX: 0, top: 100,
+  text: 'Show QRCode'
+}).appendTo(ui.contentView);
+
+let textView = new TextView({
+  centerX: 0, top: [button, 50],
+  font: '24px'
+}).appendTo(ui.contentView);
+
+let qrCanvas = new Canvas({
+  top: [textView, 10],
+  centerX: 0,
+  width: 200,
+  height: 200
+}).appendTo(ui.contentView);
+
+button.on('select', () =&amp;gt; {
+  textView.text = 'Tabris JS QR Code';
+  QRGen.GenerateQRToCanvas('Tabris JS Memang Mantappp!', qrCanvas, 200, 200);
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Perhatikan dengan seksama perubahan yang telah diterapkan pada source code di atas.&lt;/p&gt;
+&lt;p&gt;Kemudian jalankan aplikasi dengan &lt;code&gt;tabris run android|ios&lt;/code&gt;. Sebgai contoh, saya menjalankan dengan &lt;code&gt;tabris run ios&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Setelah aplikasi terbuka di emulator (atau device), klik button Show Message:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2373/content/images/2018/06/Screen-Shot-2018-06-09-at-01.03.15.png" alt="Tabris JS, QR Code Generator"&gt;&lt;/p&gt;
+&lt;p&gt;Jika Anda mendapatkan hasil seperti di atas, Anda telah berhasil membuat QR Code generator dengan Tabris JS. QR Code di atas berisi data &lt;code&gt;Tabris JS Memang Mantappp!&lt;/code&gt; yang dapat Anda uji dengan aplikasi QR Code Scanner atau kamera bawaan iOS (di iPhone, iPad). Aplikasi sejenis banyak tersedia di App Store (iOS) dan Play Store (Android).&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Mambuat Navigasi Sidebar Dengan Tabris JS</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Ghost has a number of different user roles for your team&lt;/p&gt;
+&lt;h3 id="authors"&gt;Authors&lt;/h3&gt;
+&lt;p&gt;The base user level in Ghost is an author. Authors can write posts, edit their own posts, and publish their own posts. Authors are &lt;strong&gt;trusted&lt;/strong&gt; users. If you don't trust users to be allowed to publish their own&lt;/p&gt;</description><link>http://localhost:2373/mambuat-navigasi-sidebar-dengan-tabris-js/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d70</guid><category>Getting Started</category><category>Tabris JS</category><dc:creator>Joko Rivai</dc:creator><pubDate>Fri, 08 Jun 2018 08:57:00 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1528254609158-ae7dfaa48ab3?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=ad92e92401a98dd35c11caac4bf15e95" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1528254609158-ae7dfaa48ab3?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=ad92e92401a98dd35c11caac4bf15e95" alt="Mambuat Navigasi Sidebar Dengan Tabris JS"&gt;&lt;p&gt;Ghost has a number of different user roles for your team&lt;/p&gt;
+&lt;h3 id="authors"&gt;Authors&lt;/h3&gt;
+&lt;p&gt;The base user level in Ghost is an author. Authors can write posts, edit their own posts, and publish their own posts. Authors are &lt;strong&gt;trusted&lt;/strong&gt; users. If you don't trust users to be allowed to publish their own posts, you shouldn't invite them to Ghost admin.&lt;/p&gt;
+&lt;h3 id="editors"&gt;Editors&lt;/h3&gt;
+&lt;p&gt;Editors are the 2nd user level in Ghost. Editors can do everything that an Author can do, but they can also edit and publish the posts of others - as well as their own. Editors can also invite new authors to the site.&lt;/p&gt;
+&lt;h3 id="administrators"&gt;Administrators&lt;/h3&gt;
+&lt;p&gt;The top user level in Ghost is Administrator. Again, administrators can do everything that Authors and Editors can do, but they can also edit all site settings and data, not just content. Additionally, administrators have full access to invite, manage or remove any other user of the site.&lt;/p&gt;
+&lt;h3 id="theowner"&gt;The Owner&lt;/h3&gt;
+&lt;p&gt;There is only ever one owner of a Ghost site. The owner is a special user which has all the same permissions as an Administrator, but with two exceptions: The Owner can never be deleted. And in some circumstances the owner will have access to additional special settings if applicable — for example, billing details, if using Ghost(Pro).&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;It's a good idea to ask all of your users to fill out their user profiles, including bio and social links. These will populate rich structured data for posts and generally create more opportunities for themes to fully populate their design.&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Welcome To Buyut's Log</title><description>Here are a few words about this blog and what I am interested ini.</description><link>http://localhost:2373/welcome/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d76</guid><category>about</category><category>Getting Started</category><dc:creator>Joko Rivai</dc:creator><pubDate>Thu, 07 Jun 2018 08:57:58 GMT</pubDate><media:content url="http://localhost:2373/content/images/2018/06/coding-926242_1920-1.jpg" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="http://localhost:2373/content/images/2018/06/coding-926242_1920-1.jpg" alt="Welcome To Buyut's Log"&gt;&lt;p&gt;Maaf ya kalau berantakan :)&lt;/p&gt;
+&lt;p&gt;Setelah berulangkali kerepotan dengan web hosting dan sewa domain yang lupa atau tak terbayar, dan pada akhirnya harus daftar ulang, memindahkan konten ke domain dan hosting baru, akhirnya saya pun menjadi malas menulis. Tapi waktu mengubah seseorang. Adanya engine &lt;a href="https://github.com/paladini/ghost-on-github-pages"&gt;Ghost On Github Pages&lt;/a&gt; yang membuat publikasi dapat dilakukan lokal kapan saja - dan nantinya di-push ke Github GH-Pages repository, sebagaimana repo lainnya - kembali merangsang saya untuk menulis.&lt;br&gt;
+Kenapa Github? Karena saya ingin menulis mengenai tool-tool open source yang kira-kira bermanfaat dan belum terlalu banyak dijumpai dalam Bahasa Indonesia. Jadi, Anda sudah dapat menyimpulkan bahwa blog ini berisi hal-hal teknis, khususnya teknologi informasi, lebih khusus lagi: Pemrograman.&lt;/p&gt;
+&lt;h3 id="dasarpikiran"&gt;Dasar Pikiran:&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Saya menulis bukan karena saya pintar. Tapi karena saya sedang belajar. Ini sesuai pepatah populer yang mengatakan, &amp;quot;Pintar, membuat. Bodoh, mengajar.&amp;quot; Maksudnya kurang lebih: Orang yang telah pintar dengan suatu hal cenderung berbuat dan berkreasi dengan sesuatu itu, sementara yang masih awam atau baru mempelajarinya justru menulis dan mengajar ke orang lain.&lt;/li&gt;
+&lt;li&gt;Bahwasannya tulisan-tulisan saya nantinya adalah catatan tentang perkenalan saya dan pembelajaran saya akan sesuatu, bukan referensi dan panduan teknis, karena saya menulisnya saat saya mempelajarinya, di mana saya dapat mengambil screenshot dan membuat catatan atas apa yang saya alami dan mungkin juga menambahkan pemikiran dan ide yang timbul di pikiran saya.&lt;/li&gt;
+&lt;li&gt;Perlu diketahui bahwa kemungkinan besar saya akan menulis lebih banyak tentang &lt;a href="https://tabrisjs.com/"&gt;Tabris JS&lt;/a&gt;, sebuah JavaScript framework yang sangat membantu membangun aplikasi native di platform Android, iOS dan Windows Mobile dalam bahasa JavaScript, yang kemudian di-bridge menggunakan &lt;a href="https://cordova.apache.org"&gt;Cordova&lt;/a&gt;. Tabris JS tidak menggunkan embedded web browser sebagaimana aplikasi hybrid seperti Onsen UI, Ionic dan sejenisnya. Tabris JS lebih mirip dengan React Native dan NativeScript. Kita akan membahas tentang Tabris JS lebih banyak nanti.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Salam hangat,&lt;br&gt;
+Buyut.&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Berkenalan Dengan Tabris JS</title><description>Tabris JS, seperti React Native dan NativeScript, adalah framework Tabris JS adalah salah satu framework untuk membangun **Aplikasi Native** untuk Android, iOS dan Windows Mobile.</description><link>http://localhost:2373/berkenalan-dengan-tabris-js/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d74</guid><category>Getting Started</category><category>Tabris JS</category><dc:creator>Joko Rivai</dc:creator><pubDate>Thu, 07 Jun 2018 08:57:57 GMT</pubDate><media:content url="https://casper.ghost.org/v1.0.0/images/writing.jpg" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://casper.ghost.org/v1.0.0/images/writing.jpg" alt="Berkenalan Dengan Tabris JS"&gt;&lt;p&gt;Tabris JS adalah salah satu framework untuk membangun &lt;strong&gt;Aplikasi Native&lt;/strong&gt; untuk Android, iOS dan Windows Mobile.&lt;/p&gt;
+&lt;p&gt;Tabris JS, seperti React Native dan NativeScript, adalah framework JavaScript untuk membangun aplikasi mobile (iOS, Android dan Windows Mobile) dengan pendekatan &lt;strong&gt;native bridging&lt;/strong&gt;. Tak seperti Ionic, Onsen UI atau framwork hybrid lainnya yang memanfaatkan HTML5 dan platform Cordova sebagai bridge, Tabris JS tidak menggunakan WebView untuk UI aplikasi. Dengan demikian, utilitas DOM dan property-property-nya tak dapat digunakan di Tabris JS. Namun begitu, Tabris JS tetap merupakan pilihan yang bagus karena memberikan bebarapa keuntungan, antara lain - yang paling penting - performa aplikasi yang lebih bagus daripada hybrid, karena Tabris JS merender UI langsung di atas layer UI native milik masing-masing mobile OS, bukannya merender UI pada embedded WebView. Tabris JS memberikan UI yang terlihat lebih orisinil, karena pada tiap platform, UI Tabris JS tampil sama dengan tampilan UI native. Ini dapat juga menjadi kekurangan Tabris JS karena pada tiap platform tampilan aplikasi yang sama akan terlihat berbeda. Beberapa developer mengatakannya sebagai &lt;strong&gt;Inconsistent UI&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Tabris JS menggunakan JavaScript klasik (vanilla) dalam pemrogramannya, namun belakangan Tabris JS sudah merilis dukungan untuk penulisan programnya menggunakan TypeScript dan memungkinkan penulisan UI secara deklaratif dengan syntax mirip XML. Saya sendiri lebih menyukai deklarasi UI dalam JavaScript murni karena saya kurang mahir menulisnya dalam TypeScript dan XML-alike syntax. Di sisi lain TypeScript perlu di-transpile (didecode) menjadi JavaScript klasik sebelum dieksekusi di tiap platform mobile, yang menurut saya, justru mengurangi performa. Beberapa pendapat mendukung TypeScript untuk aplikasi skala besar karena adanya proteksi terhadap kesalahan yang mungkin terjadi pada JavaScript sebagai bahasa &amp;quot;Weak Typing&amp;quot;. Sebagai contoh, JavaScript mengenal tipe &lt;em&gt;number&lt;/em&gt;, namun tidak ada pemeriksaan apakah number ini adalah &lt;em&gt;float (bilangan pecahan)&lt;/em&gt; atau &lt;em&gt;integer&lt;/em&gt;. Pendapat ini ada benarnya, namun saya tidak peduli untuk saat ini. Toh, di situ lah kita akan belajar berhati-hati dan disiplin dalam menulis kode, kan?&lt;/p&gt;
+&lt;p&gt;Saat tulisan ini ditulis, Tabris JS telah mencapai versi 2.5.1 dengan beragam fitur. Kita akan melihat fitur-fitur ini nanti. Untuk saat ini kita cukup membahas tentang Tabris JS secara umum saja.&lt;/p&gt;
+&lt;h2 id="gettingstarted"&gt;Getting Started&lt;/h2&gt;
+&lt;p&gt;Silahkan baca tulisan tentang &lt;a href="https://jokorivai.github.io/static/membangun-aplikasi-pertama-dengan-tabris-js"&gt;Membangun Aplikasi Pertama Dengan Tabris JS&lt;/a&gt; sebagai langkah awal.&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Membangun Aplikasi Pertama Dengan Tabris JS</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Kita akan menginstall Tabris JS, membuat aplikasi pertama dan mengujinya di iOS dan Android.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Catatan, saya bukan penggemar Linux dan tidak punya mesin Linux, sehingga saat ini saya tak dapat menulis tentang Membangun Aplikasi dengan Tabris JS di platform Linux.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="instalasi"&gt;Instalasi&lt;/h2&gt;
+&lt;p&gt;Sebelum kita membahas mengenai instalasi, terlebih dahulu mari kita&lt;/p&gt;</description><link>http://localhost:2373/membangun-aplikasi-pertama-dengan-tabris-js/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d72</guid><category>Getting Started</category><category>Tabris JS</category><dc:creator>Joko Rivai</dc:creator><pubDate>Thu, 07 Jun 2018 08:57:56 GMT</pubDate><media:content url="https://images.unsplash.com/photo-1514996550219-62672472d03b?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=30e79fb6a41ae06eb9aff240a4fb0f6c" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://images.unsplash.com/photo-1514996550219-62672472d03b?ixlib=rb-0.3.5&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=1080&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjExNzczfQ&amp;s=30e79fb6a41ae06eb9aff240a4fb0f6c" alt="Membangun Aplikasi Pertama Dengan Tabris JS"&gt;&lt;p&gt;Kita akan menginstall Tabris JS, membuat aplikasi pertama dan mengujinya di iOS dan Android.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Catatan, saya bukan penggemar Linux dan tidak punya mesin Linux, sehingga saat ini saya tak dapat menulis tentang Membangun Aplikasi dengan Tabris JS di platform Linux.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="instalasi"&gt;Instalasi&lt;/h2&gt;
+&lt;p&gt;Sebelum kita membahas mengenai instalasi, terlebih dahulu mari kita lihat kebutuhan-kebutuhan minimal yang diperlukan. Antara lain, kebutuhan hardware seperti prosesor, Kapasitas penyimpanan, ukuran layar Dan RAM. Seperti saya katakan di atas, saya tidak akan membahas mengenai instalasi dan pembuatan aplikasi mobile di sistem operasi Linux. Karena nya di tulisan ini hanya saya bahas seputar sistem operasi OS X dan Windows. Jika spesifikasi komputer anda tidak memenuhi spesifikasi minimal yang saya tulis berikut ini, Kemungkinan Anda tetap akan dapat membuat aplikasi dengan menggunakan Tabris JS namun akan mengalami kendala seperti proses kompilasi yang lambat dan mungkin kendala-kendala lainnya.&lt;/p&gt;
+&lt;h3 id="kebutuhanminimal"&gt;Kebutuhan Minimal&lt;/h3&gt;
+&lt;p&gt;Kebutuhan hardware yang saya tulis di bawah tidak baku dan harus persis sama. Ini hanya referensi saja, yang kurang lebih merupakan spesifikasi minimal untuk membuat aplikasi mobile untuk iOS dan Android. Sedangkan untuk software, semua yang saya tulis sifatnya wajib dan diperlukan.&lt;/p&gt;
+&lt;h4 id="kebutuhanuntukwindows"&gt;Kebutuhan Untuk Windows&lt;/h4&gt;
+&lt;p&gt;Untuk Windows, anda memerlukan komputer atau laptop dengan prosesor minimal Intel Core 2 Duo, RAM 4 GB ukuran layar 1366 X 768 Pixel. Anda memerlukan penyimpanan yang kosong sebesar kira kira 10 GB. Jika penyimpanan komputer atau laptop Anda menggunakan SSD maka akan lebih bagus karena proses kompilasi akan lebih cepat. Untuk sistem operasinya sendiri anda dapat menggunakan Windows 7, Windows 8 atau Windows 10 baik 32 bit maupun 64 bit.&lt;/p&gt;
+&lt;p&gt;Sebagai catatan, di Windows Anda hanya dapat membuat aplikasi mobile untuk Android dan Windows Mobile, anda tidak dapat membuat aplikasi mobile untuk iOS, karena pada Windows kebutuhan yang diperlukan untuk membangun aplkasi mobile untuk iOS yaitu &lt;strong&gt;XCode&lt;/strong&gt; tidak tersedia dan saat ini hanya tersedia pada platform Mac OSX.&lt;/p&gt;
+&lt;p&gt;Anda harus memasang juga Java ( JDK versi 8) yang dapat Anda unduh dari &lt;a href="http://java.com/en/download"&gt;java.com&lt;/a&gt;, kemudian instal Android SDK dari &lt;a href="http://android.pk/android-sdk.php"&gt;Android.pk&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id="kebutuhanuntukmacosx"&gt;Kebutuhan Untuk Mac OSX&lt;/h4&gt;
+&lt;p&gt;Jika anda menggunakan Mac, Anda dapat menggunakan semua versi Mac dengan RAM 4GB, Ruang penyimpanan hard disk yang kosong sebesar 10 GB, dan sistem operasi minimal 10.7 (Lion). Tutorial yang saya tulis ini menggunakan sistem operasi High Sierra pada MacBook Pro atau yang terbaru, RAM 8 GB dan penyimpanan SSD 256 GB. Kemudian Anda membutuhkan XCode yang dapat diinstal dari App Store dengan update Command Line Tools.&lt;/p&gt;
+&lt;p&gt;Jika semua kebutuhan di atas terpenuhi, silahkan unduh Android SDK. Anda dapat memperoleh Android SDK versi &lt;a href="http://android.pk/android-sdk.php"&gt;klasik di sini&lt;/a&gt; - bukan yang diunduh dari Android.com, karena tidak lengkap. Saya pun tidak menyarankan untuk menggunakan Android SDK bawaan Android Studio, karena ukuran bundel unduhan yang cukup besar dan Anda memerlukan ekstra ruang harddisk untuk menginstalnya. Java sudah tersedia di Mac OSX - dan jika belum tersedia di Mac Anda, silahkan install dari &lt;a href="http://java.com/en/download/"&gt;java.com&lt;/a&gt;. Pilih versi 8 yang sesuai dengan tipe prosesor Anda, apakah 32 bit atau 64 bit.&lt;/p&gt;
+&lt;h3 id="instalasidiwindows"&gt;Instalasi di Windows&lt;/h3&gt;
+&lt;p&gt;Tag archives are like dedicated home-pages for each category of content that you have. They have their own pages, their own RSS feeds, and can support their own cover images and meta data.&lt;/p&gt;
+&lt;h3 id="instalasidimacosx"&gt;Instalasi Di Mac OSX&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Install Node JS. Anda dapat mendownload Node JS &lt;a href="http://nodejs.org"&gt;di sini&lt;/a&gt;. Sebaiknya Anda install versi terbaru. Anda dapat mengecek apakah Node sudah terinstall dengan benar dengan mengetik &lt;code&gt;node -v&lt;/code&gt; dan mengecek NPM (Node Package Manager) dengan &lt;code&gt;npm -v&lt;/code&gt;. Jika keduanya sudah ok, silahkan lanjutkan dengan langkah kedua.&lt;/li&gt;
+&lt;li&gt;Instal Tabris CLI dengan perintah &lt;code&gt;sudo npm install tabris-cli -g&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Install Cordova secara global dengan &lt;code&gt;sudo npm install cordova -g&lt;/code&gt;. Meskipun Tabris CLI telah menyertakan Cordova untuk mengompilasi projek, Anda tetap memerlukan Cordova yang diinstal terpisah secara global untuk keperluan di luar Tabris CLI, contohnya untuk menambahkan plugin Cordova ke projek.&lt;/li&gt;
+&lt;li&gt;s&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="membuatprojek"&gt;Membuat Projek&lt;/h2&gt;
+&lt;p&gt;Inside the Ghost editor, you can drag and drop tags into a specific order. The first tag in the list is always given the most importance, and some themes will only display the primary tag (the first tag in the list) by default. So you can add the most important tag which you want to show up in your theme, but also add a bunch of related tags which are less important.&lt;/p&gt;
+&lt;h3 id="membuatprojekdengantabriscli"&gt;Membuat Projek dengan Tabris CLI&lt;/h3&gt;
+&lt;p&gt;&lt;mark&gt;&lt;strong&gt;News&lt;/strong&gt;, Cycling, Bart Stevens, Extreme Sports&lt;/mark&gt;&lt;/p&gt;
+&lt;h3 id="menambahkanplatformtabrisjsuntukiosdanandroid"&gt;Menambahkan Platform Tabris JS (untuk iOS dan Android)&lt;/h3&gt;
+&lt;p&gt;In this example, &lt;strong&gt;News&lt;/strong&gt; is the primary tag which will be displayed by the theme, but the post will also still receive all the other tags, and show up in their respective archives.&lt;/p&gt;
+&lt;h2 id="melakukankompilasidanpengetesan"&gt;Melakukan Kompilasi dan Pengetesan&lt;/h2&gt;
+&lt;p&gt;Sometimes you may want to assign a post a specific tag, but you don't necessarily want that tag appearing in the theme or creating an archive page. In Ghost, hashtags are private and can be used for special styling.&lt;/p&gt;
+&lt;h3 id="localbuilddanremotebuild"&gt;Local Build dan Remote Build&lt;/h3&gt;
+&lt;h3 id="mendapatkanbuildkey"&gt;Mendapatkan Build Key&lt;/h3&gt;
+&lt;h3 id="mengujiaplikasipadaemulator"&gt;Menguji Aplikasi Pada Emulator&lt;/h3&gt;
+&lt;h4 id="iosemulator"&gt;iOS Emulator&lt;/h4&gt;
+&lt;h4 id="androidemulator"&gt;Android Emulator&lt;/h4&gt;
+&lt;h4 id="menggunakantabrisjsdeveloperapp"&gt;Menggunakan Tabris JS Developer App&lt;/h4&gt;
+&lt;h2 id="menambahkancordovaplugin"&gt;Menambahkan Cordova Plugin&lt;/h2&gt;
+&lt;p&gt;For example, if you sometimes publish posts with video content - you might want your theme to adapt and get rid of the sidebar for these p&lt;br&gt;
+osts, to give more space for an embedded video to fill the screen. In this case, you could use private tags to tell your theme what to do.&lt;/p&gt;
+&lt;p&gt;&lt;mark&gt;&lt;strong&gt;News&lt;/strong&gt;, Cycling, #video&lt;/mark&gt;&lt;/p&gt;
+&lt;p&gt;Here, the theme would assign the post publicly displayed tags of &lt;code&gt;News&lt;/code&gt;, and &lt;code&gt;Cycling&lt;/code&gt; - but it would also keep a private record of the post being tagged with &lt;code&gt;#video&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In your theme, you could then look for private tags conditionally and give them special formatting:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-javascript"&gt;var {t} = require('tabris');
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can find documentation for theme development techniques like this and many more over on Ghost's extensive &lt;a href="https://themes.ghost.org/"&gt;theme documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Advanced Markdown tips</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;There are lots of powerful things you can do with the Ghost editor&lt;/p&gt;
+&lt;p&gt;If you've gotten pretty comfortable with &lt;a href="http://localhost:2373/the-editor/"&gt;all the basics&lt;/a&gt; of writing in Ghost, then you may enjoy some more advanced tips about the types of things you can do with Markdown!&lt;/p&gt;
+&lt;p&gt;As with the last post about&lt;/p&gt;</description><link>http://localhost:2373/advanced-markdown/</link><guid isPermaLink="false">5b18f391fbaf7f16f8962d6c</guid><category>Getting Started</category><dc:creator>Joko Rivai</dc:creator><pubDate>Thu, 07 Jun 2018 08:57:53 GMT</pubDate><media:content url="https://casper.ghost.org/v1.0.0/images/advanced.jpg" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://casper.ghost.org/v1.0.0/images/advanced.jpg" alt="Advanced Markdown tips"&gt;&lt;p&gt;There are lots of powerful things you can do with the Ghost editor&lt;/p&gt;
+&lt;p&gt;If you've gotten pretty comfortable with &lt;a href="http://localhost:2373/the-editor/"&gt;all the basics&lt;/a&gt; of writing in Ghost, then you may enjoy some more advanced tips about the types of things you can do with Markdown!&lt;/p&gt;
+&lt;p&gt;As with the last post about the editor, you'll want to be actually editing this post as you read it so that you can see all the Markdown code we're using.&lt;/p&gt;
+&lt;h2 id="specialformatting"&gt;Special formatting&lt;/h2&gt;
+&lt;p&gt;As well as bold and italics, you can also use some other special formatting in Markdown when the need arises, for example:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;s&gt;strike through&lt;/s&gt;&lt;/li&gt;
+&lt;li&gt;&lt;mark&gt;highlight&lt;/mark&gt;&lt;/li&gt;
+&lt;li&gt;*escaped characters*&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="writingcodeblocks"&gt;Writing code blocks&lt;/h2&gt;
+&lt;p&gt;There are two types of code elements which can be inserted in Markdown, the first is inline, and the other is block. Inline code is formatted by wrapping any word or words in back-ticks, &lt;code&gt;like this&lt;/code&gt;. Larger snippets of code can be displayed across multiple lines using triple back ticks:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.my-link {
+    text-decoration: underline;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you want to get really fancy, you can even add syntax highlighting using &lt;a href="http://prismjs.com/"&gt;Prism.js&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="fullbleedimages"&gt;Full bleed images&lt;/h2&gt;
+&lt;p&gt;One neat trick which you can use in Markdown to distinguish between different types of images is to add a &lt;code&gt;#hash&lt;/code&gt; value to the end of the source URL, and then target images containing the hash with special styling. For example:&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://casper.ghost.org/v1.0.0/images/walking.jpg#full" alt="Advanced Markdown tips"&gt;&lt;/p&gt;
+&lt;p&gt;which is styled with...&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;img[src$=&amp;quot;#full&amp;quot;] {
+    max-width: 100vw;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates full-bleed images in the Casper theme, which stretch beyond their usual boundaries right up to the edge of the window. Every theme handles these types of things slightly differently, but it's a great trick to play with if you want to have a variety of image sizes and styles.&lt;/p&gt;
+&lt;h2 id="referencelists"&gt;Reference lists&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;The quick brown &lt;a href="https://en.wikipedia.org/wiki/Fox" title="Wikipedia: Fox"&gt;fox&lt;/a&gt;, jumped over the lazy &lt;a href="https://en.wikipedia.org/wiki/Dog" title="Wikipedia: Dog"&gt;dog&lt;/a&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Another way to insert links in markdown is using reference lists. You might want to use this style of linking to cite reference material in a Wikipedia-style. All of the links are listed at the end of the document, so you can maintain full separation between content and its source or reference.&lt;/p&gt;
+&lt;h2 id="creatingfootnotes"&gt;Creating footnotes&lt;/h2&gt;
+&lt;p&gt;The quick brown fox&lt;sup class="footnote-ref"&gt;&lt;a href="#fn1" id="fnref1"&gt;[1]&lt;/a&gt;&lt;/sup&gt; jumped over the lazy dog&lt;sup class="footnote-ref"&gt;&lt;a href="#fn2" id="fnref2"&gt;[2]&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Footnotes are a great way to add additional contextual details when appropriate. Ghost will automatically add footnote content to the very end of your post.&lt;/p&gt;
+&lt;h2 id="fullhtml"&gt;Full HTML&lt;/h2&gt;
+&lt;p&gt;Perhaps the best part of Markdown is that you're never limited to just Markdown. You can write HTML directly in the Ghost editor and it will just work as HTML usually does. No limits! Here's a standard YouTube embed code as an example:&lt;/p&gt;
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/Cniqsc9QfDo?rel=0&amp;amp;showinfo=0" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;hr class="footnotes-sep"&gt;
+&lt;section class="footnotes"&gt;
+&lt;ol class="footnotes-list"&gt;
+&lt;li id="fn1" class="footnote-item"&gt;&lt;p&gt;Foxes are red &lt;a href="#fnref1" class="footnote-backref"&gt;↩︎&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn2" class="footnote-item"&gt;&lt;p&gt;Dogs are usually not red &lt;a href="#fnref2" class="footnote-backref"&gt;↩︎&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/section&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item><item><title>Setting up your own Ghost theme</title><description>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;p&gt;Creating a totally custom design for your publication&lt;/p&gt;
+&lt;p&gt;Ghost comes with a beautiful default theme called Casper, which is designed to be a clean, readable publication layout and can be easily adapted for most purposes. However, Ghost can also be completely themed to suit your needs. Rather than just giving&lt;/p&gt;</description><link>http://localhost:2373/themes/</link><guid isPermaLink="false">5b18f390fbaf7f16f8962d6a</guid><category>Getting Started</category><dc:creator>Joko Rivai</dc:creator><pubDate>Thu, 07 Jun 2018 08:57:52 GMT</pubDate><media:content url="https://casper.ghost.org/v1.0.0/images/design.jpg" medium="image"/><content:encoded>&lt;!--kg-card-begin: markdown--&gt;&lt;!--kg-card-begin: markdown--&gt;&lt;img src="https://casper.ghost.org/v1.0.0/images/design.jpg" alt="Setting up your own Ghost theme"&gt;&lt;p&gt;Creating a totally custom design for your publication&lt;/p&gt;
+&lt;p&gt;Ghost comes with a beautiful default theme called Casper, which is designed to be a clean, readable publication layout and can be easily adapted for most purposes. However, Ghost can also be completely themed to suit your needs. Rather than just giving you a few basic settings which act as a poor proxy for code, we just let you write code.&lt;/p&gt;
+&lt;p&gt;There are a huge range of both free and premium pre-built themes which you can get from the &lt;a href="http://marketplace.ghost.org"&gt;Ghost Theme Marketplace&lt;/a&gt;, or you can simply create your own from scratch.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://marketplace.ghost.org"&gt;&lt;img src="https://casper.ghost.org/v1.0.0/images/marketplace.jpg" alt="Setting up your own Ghost theme"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Anyone can write a completely custom Ghost theme, with just some solid knowledge of HTML and CSS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ghost themes are written with a templating language called handlebars, which has a bunch of dynamic helpers to insert your data into template files. Like &lt;code&gt;{{author.name}}&lt;/code&gt;, for example, outputs the name of the current author.&lt;/p&gt;
+&lt;p&gt;The best way to learn how to write your own Ghost theme is to have a look at &lt;a href="https://github.com/TryGhost/Casper"&gt;the source code for Casper&lt;/a&gt;, which is heavily commented and should give you a sense of how everything fits together.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;default.hbs&lt;/code&gt; is the main template file, all contexts will load inside this file unless specifically told to use a different template.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;post.hbs&lt;/code&gt; is the file used in the context of viewing a post.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;index.hbs&lt;/code&gt; is the file used in the context of viewing the home page.&lt;/li&gt;
+&lt;li&gt;and so on&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We've got &lt;a href="http://themes.ghost.org/docs/about"&gt;full and extensive theme documentation&lt;/a&gt; which outlines every template file, context and helper that you can use.&lt;/p&gt;
+&lt;p&gt;If you want to chat with other people making Ghost themes to get any advice or help, there's also a &lt;strong&gt;#themes&lt;/strong&gt; channel in our &lt;a href="https://slack.ghost.org"&gt;public Slack community&lt;/a&gt; which we always recommend joining!&lt;/p&gt;
+&lt;!--kg-card-end: markdown--&gt;&lt;!--kg-card-end: markdown--&gt;</content:encoded></item></channel></rss>
